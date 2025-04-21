@@ -74,7 +74,7 @@ export const Signup = () => {
                   key={schoolOption.value}
                   className="custom-select-option"
                   onClick={() => {
-                    setSchool(schoolOption.value);
+                    setSchool(schoolOption);
                     setSearchTerm(schoolOption.label);
                   }}
                 >
