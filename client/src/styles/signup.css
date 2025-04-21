@@ -1,0 +1,92 @@
+.signupwrapper {
+  width: 95%;
+  margin: auto;
+}
+
+.signup {
+  display: flex;
+  flex-direction: column;
+  margin: 5% 0 0 0;
+}
+
+.signup img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0px auto;
+}
+
+.signup span {
+  margin: 0px auto 1rem auto;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.signup input,
+button {
+  margin: 0 0 2rem 0;
+  padding: 1rem 5px;
+  border-radius: 10px;
+}
+
+.signup button {
+  cursor: pointer;
+  border: none;
+  font-size: 15px;
+  background-color: #9d2e34;
+  color: white;
+}
+
+.signup .signupinfo {
+  text-align: center;
+}
+
+.signup .link {
+  color: #9d2e34;
+}
+
+/*CUSTOM DROPDOWN*/
+
+.signup .custom-select {
+  position: relative;
+  width: 100%;
+}
+
+.signup .custom-select-input {
+  width: 100%;
+  padding: 1rem 5px;
+  box-sizing: border-box;
+}
+
+.signup .custom-select-list {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: -1rem 0 0 0;
+  list-style: none;
+}
+
+.signup .custom-select-option {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.signup .custom-select-option:hover {
+  background-color: #f0f0f0;
+}
+
+/* DESKTOP */
+
+@media only screen and (min-width: 768px) {
+  .signupwrapper {
+    width: 50%;
+  }
+}

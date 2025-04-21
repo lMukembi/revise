@@ -1,0 +1,35 @@
+.examcard {
+  display: flex;
+  margin: 10px 0px 2rem 0px;
+  flex-direction: column;
+}
+
+.examcard .unit {
+  font-size: large;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.examcard .download {
+  cursor: pointer;
+  color: #9d2e34;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.examcard .others {
+  margin-left: 0px;
+  display: flex;
+  font-size: small;
+  gap: 5px;
+}
+
+/* DESKTOP */
+
+@media only screen and (min-width: 768px) {
+  .examcard {
+    margin: 2rem 0px 2rem 3rem;
+  }
+}

@@ -1,0 +1,125 @@
+.home {
+  width: 95%;
+  margin: auto;
+}
+
+.home .header {
+  background-color: #9d2e34;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.home .header h2 {
+  margin: 10px auto 10px 10px;
+  display: flex;
+  align-items: center;
+}
+
+.home .header h2 img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.home .units {
+  margin-top: 1rem;
+}
+
+.home .units .noexams {
+  margin: auto auto auto 3rem;
+}
+
+.home .search {
+  display: flex;
+  margin: 5rem auto auto auto;
+  padding: 1rem 10px;
+  border-radius: 10px;
+  width: 95%;
+}
+
+.home .header .logout {
+  margin-right: 10px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.home .allexams {
+  margin: 1rem auto 0px auto;
+}
+
+.home .addbutton {
+  position: fixed;
+  bottom: 8%;
+  right: 10%;
+}
+
+.home .addbutton .addicon {
+  font-size: 40px;
+  color: #9d2e34;
+}
+
+/* MOBILE */
+
+@media only screen and (max-width: 768px) {
+  .home .header {
+    align-items: center;
+  }
+
+  .home .header h2 {
+    font-size: 20px;
+  }
+
+  .home .examswrapper {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
+      rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    padding: 1px 5px;
+    border-radius: 10px;
+    margin: 1rem 0px 5px 0px;
+  }
+}
+
+/* DESKTOP */
+
+@media only screen and (min-width: 768px) {
+  .home {
+    width: 60%;
+    margin: 5rem auto;
+  }
+
+  .home .header h2 {
+    margin: 10px auto 10px 20%;
+  }
+
+  .home .header .headright {
+    margin-right: 20%;
+    display: flex;
+  }
+
+  .home .header .headright .addexam {
+    color: white;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .home .header .headright .logout {
+    margin-left: 20px;
+    font-size: 25px;
+    cursor: pointer;
+  }
+
+  .home .search {
+    padding: 1rem 10rem 1rem 0.5rem;
+    margin: 3rem auto 1rem 3rem;
+    width: 40%;
+  }
+
+  .home .allexams {
+    margin: 0px auto 0px 3rem;
+  }
+}
