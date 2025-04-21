@@ -46,7 +46,7 @@ export const Signup = () => {
         navigate("/signup");
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       navigate("/signup");
     }
   };
