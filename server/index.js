@@ -12,9 +12,9 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "https://api.revise.co.ke",
       "https://revise.co.ke",
       "https://www.revise.co.ke",
+      "https://api.revise.co.ke",
       // "http://localhost:3000",
     ],
     credentials: true,
