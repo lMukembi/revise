@@ -2,7 +2,8 @@ import React from "react";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
 import "../styles/examcard.css";
 
-const exambankAPI = "http://localhost:8000";
+// const exambankAPI = "http://localhost:8000";
+const exambankAPI = "https://api.revise.co.ke";
 
 export const Examcard = ({ exam, index }) => {
   const fileUrl = `${exambankAPI}/uploads/${exam.file}`;

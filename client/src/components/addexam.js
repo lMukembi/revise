@@ -7,7 +7,8 @@ import { redirect, useNavigate } from "react-router-dom";
 import { MdLogout } from "react-icons/md";
 import { Programmes } from "./programmes";
 
-const exambankAPI = "http://localhost:8000";
+// const exambankAPI = "http://localhost:8000";
+const exambankAPI = "https://api.revise.co.ke";
 
 export const Addexam = () => {
   const userData = JSON.parse(localStorage.getItem("JSUD"));

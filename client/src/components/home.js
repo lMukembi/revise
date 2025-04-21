@@ -7,7 +7,8 @@ import { MdLogout } from "react-icons/md";
 import Logo from "../assets/logo.png";
 import axios from "axios";
 
-const exambankAPI = "http://localhost:8000";
+// const exambankAPI = "http://localhost:8000";
+const exambankAPI = "https://api.revise.co.ke";
 
 export const Home = () => {
   const userData = JSON.parse(localStorage.getItem("JSUD"));

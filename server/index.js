@@ -11,7 +11,12 @@ const port = 8000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: [
+      "https://api.revise.co.ke",
+      "https://revise.co.ke",
+      "https://www.revise.co.ke",
+      // "http://localhost:3000",
+    ],
     credentials: true,
     exposedHeaders: ["ip"],
   })

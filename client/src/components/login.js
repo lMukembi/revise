@@ -4,7 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import axios from "axios";
 
-const exambankAPI = "http://localhost:8000";
+// const exambankAPI = "http://localhost:8000";
+const exambankAPI = "https://api.revise.co.ke";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
