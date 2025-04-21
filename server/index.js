@@ -1,13 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const connectionDB = require("./connection.js");
+const connectionDB = require("./connect.js");
 
 require("dotenv").config();
 const app = express();
 const port = 8000;
-
-app.use(express.json());
+MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
+//  MONGO_URI =  "mongodb+srv://apexadverts:1919@apexadverts.e1ng8.mongodb.net/?retryWrites=true&w=majority&appName=ApexAdverts"
 
 const corsOptions = {
   origin: [
@@ -40,10 +40,10 @@ app.get("*", (req, res) => {
 
 const DBConnection = async () => {
   try {
-    await connectionDB(process.env.MONGO_URI);
+    await connectionDB(MONGO_URI);
 
     app.listen(port, "0.0.0.0", () => {
-      console.log(`server is running on port, ${port}`);
+      console.log(`server is running on port ${port}`);
     });
   } catch (err) {
     console.log(err.message);

@@ -8,6 +8,9 @@ exports.processSignup = async (req, res) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(password, salt);
 
+  const JWT_SECRET =
+    "k3bwFeWy4VRrFDQ3r0vDirckvsAH3k7AIwg4DVCm8VhTfI/w8YHF3M0ZG+gC5bWwS1xYj1bVl8liAuETKIElGg==";
+
   const newUser = await User.create({
     name,
     school,
@@ -18,8 +21,8 @@ exports.processSignup = async (req, res) => {
   await newUser.save();
 
   const result = { id: newUser.id };
-  const tokenID = jwt.sign(result, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+  const tokenID = jwt.sign(result, JWT_SECRET, {
+    expiresIn: "48h",
   });
 
   res.status(200).json({
@@ -35,6 +38,9 @@ exports.processLogin = async (req, res) => {
 
   const user = await User.findOne({ email });
 
+  const JWT_SECRET =
+    "k3bwFeWy4VRrFDQ3r0vDirckvsAH3k7AIwg4DVCm8VhTfI/w8YHF3M0ZG+gC5bWwS1xYj1bVl8liAuETKIElGg==";
+
   if (!user) {
     return res.status(400).json({
       message: "Not registered!",
@@ -48,8 +54,8 @@ exports.processLogin = async (req, res) => {
   }
 
   const result = { id: user.id };
-  const tokenID = jwt.sign(result, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+  const tokenID = jwt.sign(result, JWT_SECRET, {
+    expiresIn: "48h",
   });
 
   res.status(200).json({ status: true, result: user, tokenID: tokenID });
