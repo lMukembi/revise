@@ -52,7 +52,7 @@ export const Home = () => {
       <div className="header">
         <h2>
           <img src={Logo} alt="Revise" />
-          Revise | Exam Bank System
+          Revise | Exam Bank
         </h2>
 
         {window.innerWidth > 768 ? (

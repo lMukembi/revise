@@ -59,7 +59,7 @@ export const Signup = () => {
     <div className="signupwrapper">
       <form className="signup" onSubmit={(e) => processSignup(e)}>
         <img src={Logo} alt="Revise" />
-        <span>Revise | Exam Bank System</span>
+        <span>Revise | Exam Bank</span>
 
         <div className="custom-select">
           <input

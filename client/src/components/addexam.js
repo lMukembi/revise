@@ -125,7 +125,7 @@ export const Addexam = () => {
         <div className="examwrapper">
           <div className="header">
             <h2>
-              <img src={Logo} alt="Revise" /> Revise | Exam Bank System
+              <img src={Logo} alt="Revise" /> Revise | Exam Bank
             </h2>
             <div className="logout">
               <MdLogout onClick={() => logoutUser()} />

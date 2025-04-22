@@ -37,7 +37,7 @@
 .examwrapper form {
   display: flex;
   flex-direction: column;
-  margin: 20% 0 0 0;
+  margin: 25% 0 0 0;
 }
 
 .examwrapper form input,

@@ -51,7 +51,7 @@ export const Login = () => {
       <form className="login" onSubmit={(e) => processLogin(e)}>
         <img src={Logo} alt="Revise" />
 
-        <span>Revise | Exam Bank System</span>
+        <span>Revise | Exam Bank</span>
 
         <input
           type="text"
