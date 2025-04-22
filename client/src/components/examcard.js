@@ -37,12 +37,7 @@ export const Examcard = ({ exam, index }) => {
       </div>
       <div className="others">
         <small>{exam.school}</small>•<small>{exam.programme}</small>•
-        <small>
-          {new Date(exam.createdAt).toLocaleDateString("en-GB", {
-            month: "long",
-            year: "numeric",
-          })}
-        </small>
+        <small>{exam.year}</small>
       </div>
     </div>
   );

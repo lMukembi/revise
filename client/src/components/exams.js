@@ -11,7 +11,7 @@ export const Exams = ({ searchTerm }) => {
   const [exams, setExams] = useState([]);
 
   const filteredExams = exams.filter((exam) =>
-    `${exam.code} ${exam.unit} ${exam.school} ${exam.programme}`
+    `${exam.code} ${exam.unit} ${exam.school} ${exam.programme} ${exam.year}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
