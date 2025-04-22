@@ -6,15 +6,16 @@ const connectionDB = require("./connection.js");
 require("dotenv").config();
 const app = express();
 const port = 8000;
-const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
-//  const MONGO_URI =  "mongodb+srv://apexadverts:1919@apexadverts.e1ng8.mongodb.net/?retryWrites=true&w=majority&appName=ApexAdverts"
+// const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
+const MONGO_URI =
+  "mongodb+srv://apexadverts:1919@apexadverts.e1ng8.mongodb.net/?retryWrites=true&w=majority&appName=ApexAdverts";
 
 const corsOptions = {
   origin: [
-    "https://revise.co.ke",
-    "https://www.revise.co.ke",
-    "https://api.revise.co.ke",
-    // "http://localhost:3000",
+    // "https://revise.co.ke",
+    // "https://www.revise.co.ke",
+    // "https://api.revise.co.ke",
+    "http://localhost:3000",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type, Authorization"],

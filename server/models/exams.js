@@ -17,6 +17,11 @@ const examSchema = new mongoose.Schema(
       required: true,
     },
 
+    year: {
+      type: String,
+      required: true,
+    },
+
     code: {
       type: String,
       required: true,

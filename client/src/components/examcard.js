@@ -32,7 +32,7 @@ export const Examcard = ({ exam, index }) => {
           {index + 1}. {exam.code}: {exam.unit}
         </div>
         <div onClick={handleDownload} className="download" title="Download PDF">
-          <HiOutlineDocumentDownload />
+          <HiOutlineDocumentDownload className="downloadicon" />
         </div>
       </div>
       <div className="others">

@@ -55,12 +55,12 @@
 
 .home .addbutton {
   position: fixed;
-  bottom: 8%;
+  bottom: 10%;
   right: 10%;
 }
 
 .home .addbutton .addicon {
-  font-size: 40px;
+  font-size: 55px;
   color: #9d2e34;
 }
 

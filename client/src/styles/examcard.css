@@ -19,6 +19,10 @@
   align-items: center;
 }
 
+.examcard .download .downloadicon {
+  font-size: 25px;
+}
+
 .examcard .others {
   margin-left: 0px;
   display: flex;

@@ -1,7 +1,7 @@
 const Exams = require("../models/exams");
 
 exports.addExam = async (req, res) => {
-  const { code, unit, id, school, programme } = req.body;
+  const { code, unit, id, school, programme, year } = req.body;
 
   const file = req.file;
 
@@ -13,6 +13,7 @@ exports.addExam = async (req, res) => {
     const newExam = await Exams.create({
       code,
       school,
+      year,
       programme,
       unit,
       file: file.filename,

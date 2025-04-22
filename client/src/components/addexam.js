@@ -17,6 +17,7 @@ export const Addexam = () => {
   const [school, setSchool] = useState("");
   const [programme, setProgramme] = useState("");
   const [unit, setUnit] = useState("");
+  const [year, setYear] = useState("");
   const [file, setFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,13 @@ export const Addexam = () => {
     navigate("/login");
   };
 
+  const currentYear = new Date().getFullYear();
+  const years = [];
+
+  for (let y = 2000; y <= currentYear; y++) {
+    years.push(y);
+  }
+
   const processAddExam = async (e) => {
     e.preventDefault();
 
@@ -61,6 +69,7 @@ export const Addexam = () => {
         formData.append("programme", programme);
         formData.append("file", file);
         formData.append("id", userID);
+        formData.append("year", year);
 
         const res = await axios.post(
           `${exambankAPI}/api/exams/${userID}/addexam`,
@@ -164,9 +173,25 @@ export const Addexam = () => {
               type="text"
               name="name"
               required
-              placeholder="Enter unit name"
+              placeholder="Enter unit title"
               onChange={(e) => setUnit(e.target.value)}
             />
+
+            <select
+              name="year"
+              required
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              className="year-select"
+            >
+              <option value="">Select exam year</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+
             <input
               type="file"
               name="file"

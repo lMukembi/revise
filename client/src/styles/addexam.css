@@ -13,6 +13,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  z-index: 10;
 }
 
 .examwrapper .header h2 {
@@ -36,7 +37,7 @@
 .examwrapper form {
   display: flex;
   flex-direction: column;
-  margin: 40% 0 0 0;
+  margin: 20% 0 0 0;
 }
 
 .examwrapper form input,
@@ -44,6 +45,15 @@ button {
   margin: 0 0 2rem 0;
   padding: 1rem 5px;
   border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.examwrapper .year-select {
+  margin: 0 0 2rem 0;
+  padding: 1rem 5px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 .examwrapper form button {
@@ -121,6 +131,6 @@ button {
   }
 
   .examwrapper form {
-    margin: 25% 0 0 0;
+    margin: 20% 0 0 0;
   }
 }
