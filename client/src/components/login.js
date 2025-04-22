@@ -10,6 +10,7 @@ const exambankAPI = "https://api.revise.co.ke";
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +18,8 @@ export const Login = () => {
 
   const processLogin = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     try {
       const res = await axios.post(`${exambankAPI}/api/user/login`, {
@@ -39,6 +42,8 @@ export const Login = () => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -64,7 +69,9 @@ export const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button>Login</button>
+        <button disabled={loading}>
+          {loading ? "Processing..." : "Login"}
+        </button>
 
         <div className="logininfo">
           Don't have an account?

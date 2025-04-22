@@ -54,6 +54,11 @@ button {
   color: white;
 }
 
+.examwrapper form button:disabled {
+  background-color: #d9e7e2;
+  cursor: not-allowed;
+}
+
 /*CUSTOM DROPDOWN*/
 
 .examwrapper .custom-select {

@@ -37,6 +37,11 @@ button {
   color: white;
 }
 
+.signup button:disabled {
+  background-color: #d9e7e2;
+  cursor: not-allowed;
+}
+
 .signup .signupinfo {
   text-align: center;
 }

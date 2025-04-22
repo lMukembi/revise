@@ -19,6 +19,7 @@ export const Addexam = () => {
   const [unit, setUnit] = useState("");
   const [file, setFile] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleFile = (e) => {
     const selectedFile = e.target.files[0];
@@ -42,6 +43,8 @@ export const Addexam = () => {
 
   const processAddExam = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     try {
       const userInfo = JSON.parse(localStorage.getItem("JSUD"));
@@ -76,6 +79,8 @@ export const Addexam = () => {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -169,7 +174,10 @@ export const Addexam = () => {
               accept="application/pdf"
               onChange={handleFile}
             />
-            <button>Add Exam</button>
+
+            <button disabled={loading}>
+              {loading ? "Processing..." : "Add exam"}
+            </button>
           </form>
         </div>
       ) : (

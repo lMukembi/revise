@@ -14,6 +14,7 @@ export const Signup = () => {
   const [school, setSchool] = useState(null);
   const [password, setPassword] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -23,6 +24,8 @@ export const Signup = () => {
 
   const processSignup = async (e) => {
     e.preventDefault();
+
+    setLoading(true);
 
     try {
       const res = await axios.post(`${exambankAPI}/api/user/signup`, {
@@ -48,6 +51,8 @@ export const Signup = () => {
     } catch (error) {
       console.log(error.message);
       navigate("/signup");
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -109,7 +114,9 @@ export const Signup = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button>Signup</button>
+        <button disabled={loading}>
+          {loading ? "Processing..." : "Signup"}
+        </button>
 
         <div className="signupinfo">
           Already have an account?
