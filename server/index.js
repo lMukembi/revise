@@ -33,6 +33,11 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use("/api/user", require("./routes/user"));
 app.use("/api/exams", require("./routes/exams"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/pages", express.static(path.join(__dirname, "public", "pages")));
+app.use(
+  "/sitemap.xml",
+  express.static(path.join(__dirname, "public", "sitemap.xml"))
+);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build", "index.html"));

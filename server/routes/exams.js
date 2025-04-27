@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const { exec } = require("child_process");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -25,7 +26,27 @@ const upload = multer({ storage, fileFilter });
 
 const { addExam, getExams } = require("../controllers/exams");
 
-router.route("/:id/addexam").post(upload.single("file"), addExam);
+router
+  .route("/:id/addexam")
+  .post(upload.single("file"), async (req, res, next) => {
+    try {
+      await addExam(req, res);
+
+      exec(
+        "node ../scripts/generatePages.js",
+        { cwd: path.join(__dirname, "..") },
+        (err, stdout, stderr) => {
+          if (err) {
+            console.error(stderr);
+          } else {
+            console.log(stdout);
+          }
+        }
+      );
+    } catch (err) {
+      console.error(err.message);
+    }
+  });
 router.route("/all-exams").get(getExams);
 
 module.exports = router;
