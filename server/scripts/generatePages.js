@@ -60,6 +60,11 @@ if (pdfFiles.length === 0) {
     const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
     const htmlFileName = fileName + ".html";
 
+    const encodedFileUrl = encodeURIComponent(`${siteBaseUrl}/uploads/${file}`);
+    const encodedHtmlUrl = encodeURIComponent(
+      `${siteBaseUrl}/pages/${htmlFileName}`
+    );
+
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
@@ -72,7 +77,7 @@ if (pdfFiles.length === 0) {
 <body>
   <h1>${pageTitle}</h1>
   <p>Download the ${pageTitle} exam paper in PDF format.</p>
-  <a href="${siteBaseUrl}/uploads/${file}" download>Download PDF</a>
+  <a href="${encodedFileUrl}" download>Download PDF</a>
 </body>
 </html>`;
 
@@ -81,11 +86,11 @@ if (pdfFiles.length === 0) {
     log(`Generated HTML page for: ${pageTitle}`);
 
     sitemapEntries.push({
-      loc: `${siteBaseUrl}/uploads/${file}`,
+      loc: encodedFileUrl,
       lastmod: new Date().toISOString(),
     });
     sitemapEntries.push({
-      loc: `${siteBaseUrl}/pages/${htmlFileName}`,
+      loc: encodedHtmlUrl,
       lastmod: new Date().toISOString(),
     });
   });
