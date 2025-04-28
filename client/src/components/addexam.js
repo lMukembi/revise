@@ -137,6 +137,7 @@ export const Addexam = () => {
                 type="text"
                 placeholder="Enter course"
                 value={searchTerm}
+                required
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setProgramme(null);

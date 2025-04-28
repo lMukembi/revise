@@ -30,6 +30,10 @@
   gap: 5px;
 }
 
+.examcard .others small {
+  white-space: nowrap;
+}
+
 /* DESKTOP */
 
 @media only screen and (min-width: 768px) {
