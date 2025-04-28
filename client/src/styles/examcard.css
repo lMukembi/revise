@@ -38,16 +38,16 @@
 
 .examcard .others small:nth-child(2) {
   white-space: normal;
-  word-wrap: break-word;
   overflow-wrap: break-word;
+  word-wrap: break-word;
   word-break: break-word;
   flex-grow: 1;
   flex-shrink: 0;
 }
 
 .examcard .others small:nth-child(3) {
-  flex-basis: 100%;
   white-space: nowrap;
+  flex-basis: 100%;
 }
 
 /* DESKTOP */
