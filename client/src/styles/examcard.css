@@ -28,12 +28,15 @@
   display: flex;
   flex-wrap: wrap;
   font-size: small;
-  gap: 5px;
   max-width: 100%;
 }
 
 .examcard .others small {
   white-space: nowrap;
+}
+
+.examcard .others span {
+  margin: 0px 5px;
 }
 
 .examcard .others small:nth-child(2) {
