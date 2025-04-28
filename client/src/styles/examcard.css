@@ -48,8 +48,9 @@
 
 .examcard .others small:nth-child(3) {
   white-space: nowrap;
-  display: inline-block;
   flex-shrink: 0;
+  min-width: 0;
+  order: 1;
 }
 
 /* DESKTOP */
