@@ -36,8 +36,8 @@ export const Examcard = ({ exam, index }) => {
         </div>
       </div>
       <div className="others">
-        <small>{exam.school}</small>•<small>{exam.programme}</small>•
-        <small>{exam.year}</small>
+        <small style={{ whiteSpace: "nowrap" }}>{exam.school}</small>•
+        <small>{exam.programme}</small>•<small>{exam.year}</small>
       </div>
     </div>
   );
