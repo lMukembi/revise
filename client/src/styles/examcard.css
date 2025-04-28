@@ -32,7 +32,7 @@
   gap: 5px;
 }
 
-.examcard .others small {
+.examcard .others small:nth-child(1) {
   white-space: nowrap;
 }
 
