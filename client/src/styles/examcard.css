@@ -24,8 +24,10 @@
 }
 
 .examcard .others {
+  overflow-wrap: break-word;
   margin-left: 0px;
   display: flex;
+  flex-wrap: wrap;
   font-size: small;
   gap: 5px;
 }
