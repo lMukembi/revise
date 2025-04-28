@@ -43,11 +43,13 @@
   word-break: break-word;
   flex-grow: 1;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .examcard .others small:nth-child(3) {
   white-space: nowrap;
-  flex-basis: 100%;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 /* DESKTOP */
