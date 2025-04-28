@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const https = require("https");
 
 const logFilePath = path.join(__dirname, "..", "logs", "generator.log");
 
@@ -40,33 +39,6 @@ function sendEmail(subject, text) {
   );
 }
 
-function pingGoogleSitemap(retries = 3, delayMs = 5000) {
-  const sitemapUrl = "https://revise.co.ke/sitemap.xml";
-  const pingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(
-    sitemapUrl
-  )}`;
-
-  https
-    .get(pingUrl, (res) => {
-      if (res.statusCode === 200) {
-        log("Google successfully pinged.");
-      } else {
-        log("Ping failed. Status code: " + res.statusCode);
-        if (retries > 0) {
-          log(`Retrying in ${delayMs / 1000} seconds...`);
-          setTimeout(() => pingGoogleSitemap(retries - 1, delayMs), delayMs);
-        }
-      }
-    })
-    .on("error", (err) => {
-      log("Ping error: " + err.message);
-      if (retries > 0) {
-        log(`Retrying in ${delayMs / 1000} seconds...`);
-        setTimeout(() => pingGoogleSitemap(retries - 1, delayMs), delayMs);
-      }
-    });
-}
-
 const pdfDir = path.join(__dirname, "..", "uploads");
 const outputDir = path.join(__dirname, "..", "public", "pages");
 const sitemapPath = path.join(__dirname, "..", "public", "sitemap.xml");
@@ -79,9 +51,9 @@ let sitemapEntries = [];
 const pdfFiles = fs.readdirSync(pdfDir).filter((file) => file.endsWith(".pdf"));
 
 if (pdfFiles.length === 0) {
-  log("No PDF files found.");
+  log("No PDF files found in the uploads directory.");
 } else {
-  log(`Found ${pdfFiles.length} PDF files.`);
+  log(`Found ${pdfFiles.length} PDF files to process.`);
 
   pdfFiles.forEach((file) => {
     const fileName = path.parse(file).name;
@@ -105,7 +77,8 @@ if (pdfFiles.length === 0) {
 </html>`;
 
     fs.writeFileSync(path.join(outputDir, htmlFileName), htmlContent);
-    log(`Generated page for: ${fileName}`);
+
+    log(`Generated HTML page for: ${pageTitle}`);
 
     sitemapEntries.push({
       loc: `${siteBaseUrl}/uploads/${file}`,
@@ -131,14 +104,12 @@ ${sitemapEntries
 </urlset>`;
 
   fs.writeFileSync(sitemapPath, sitemapXml);
-  log("Sitemap.xml generated.");
-
-  pingGoogleSitemap(3, 5000);
+  log("Sitemap.xml generated successfully.");
 
   sendEmail(
-    "PDF Pages and Sitemap Updated",
-    "Exam PDF pages and sitemap.xml have been generated and Google has been pinged."
+    "PDFs and Sitemap Generated",
+    "All exam PDF pages and sitemap.xml have been successfully generated."
   );
 }
 
-log("Pages and sitemap generation process completed.");
+log("Pages and sitemap.xml generation process completed.");
