@@ -60,10 +60,10 @@ if (pdfFiles.length === 0) {
     const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
     const htmlFileName = fileName + ".html";
 
-    const encodedFileUrl = encodeURIComponent(`${siteBaseUrl}/uploads/${file}`);
-    const encodedHtmlUrl = encodeURIComponent(
-      `${siteBaseUrl}/pages/${htmlFileName}`
-    );
+    const encodedFileUrl = `${siteBaseUrl}/uploads/${encodeURIComponent(file)}`;
+    const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
+      htmlFileName
+    )}`;
 
     const htmlContent = `
 <!DOCTYPE html>
