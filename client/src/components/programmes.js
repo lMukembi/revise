@@ -2422,6 +2422,10 @@ export const Programmes = [
     label: "Diploma in Electrical Power Engineering",
   },
   {
+    value: "Diploma In Business Management",
+    label: "Diploma In Business Management",
+  },
+  {
     value: "Diploma in Electrical Technology",
     label: "Diploma in Electrical Technology",
   },
