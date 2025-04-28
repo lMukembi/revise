@@ -45,15 +45,10 @@
   word-wrap: break-word;
   word-break: break-word;
   flex-grow: 1;
-  flex-shrink: 0;
-  min-width: 0;
 }
 
 .examcard .others small:nth-child(3) {
   white-space: nowrap;
-  flex-shrink: 0;
-  min-width: 0;
-  order: 1;
 }
 
 /* DESKTOP */

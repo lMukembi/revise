@@ -36,7 +36,7 @@ export const Examcard = ({ exam, index }) => {
         </div>
       </div>
       <div className="others">
-        <small style={{ whiteSpace: "nowrap" }}>{exam.school}</small>
+        <small>{exam.school}</small>
         <span>•</span>
         <small>{exam.programme}</small>
         <span>•</span>
