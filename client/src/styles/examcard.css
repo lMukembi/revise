@@ -31,7 +31,8 @@
   max-width: 100%;
 }
 
-.examcard .others small {
+.examcard .others small:nth-child(1),
+.examcard .others small:nth-child(3) {
   white-space: nowrap;
 }
 
@@ -45,10 +46,6 @@
   word-wrap: break-word;
   word-break: break-word;
   flex-grow: 1;
-}
-
-.examcard .others small:nth-child(3) {
-  white-space: nowrap;
 }
 
 /* DESKTOP */

@@ -32,21 +32,21 @@ router
     try {
       await addExam(req, res);
 
-      exec(
-        "node ../scripts/generatePages.js",
-        { cwd: path.join(__dirname, "..") },
-        (err, stdout, stderr) => {
-          if (err) {
-            console.error(stderr);
-          } else {
-            console.log(stdout);
-          }
+      const scriptPath = path.join(__dirname, "../scripts/generatePages.js");
+
+      exec(`node ${scriptPath}`, (err, stdout, stderr) => {
+        if (err) {
+          console.error("No pages generated:", stderr);
+          return;
         }
-      );
+        console.log("Pages generated:", stdout);
+      });
     } catch (err) {
       console.error(err.message);
+      next(err);
     }
   });
+
 router.route("/all-exams").get(getExams);
 
 module.exports = router;
