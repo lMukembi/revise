@@ -6,9 +6,11 @@ import { Exams } from "./exams";
 import { MdLogout } from "react-icons/md";
 import Logo from "../assets/logo.png";
 import axios from "axios";
+// import io from "socket.io-client";
 
 // const exambankAPI = "http://localhost:8000";
 const exambankAPI = "https://api.revise.co.ke";
+// const socket = io("https://api.revise.co.ke");
 
 export const Home = () => {
   const userData = JSON.parse(localStorage.getItem("JSUD"));
@@ -18,6 +20,7 @@ export const Home = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [exams, setExams] = useState([]);
+  // const [downloads, setDownloads] = useState( 0);
 
   const handleAddExam = () => {
     if (userData) {
@@ -42,6 +45,18 @@ export const Home = () => {
 
     getExams();
   }, []);
+
+  // useEffect(() => {
+  //   socket.on("examDownload", (data) => {
+  //     if (data.examID === exam._id) {
+  //       setDownloads(data.downloads);
+  //     }
+  //   });
+
+  //   return () => {
+  //     socket.off("examDownload");
+  //   };
+  // }, [exam._id]);
 
   const logoutUser = () => {
     localStorage.clear();

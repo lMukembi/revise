@@ -36,6 +36,11 @@ const examSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    downloads: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

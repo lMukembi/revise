@@ -24,7 +24,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter });
 
-const { addExam, getExams } = require("../controllers/exams");
+const { addExam, getExams, downloads } = require("../controllers/exams");
 
 router
   .route("/:id/addexam")
@@ -48,5 +48,6 @@ router
   });
 
 router.route("/all-exams").get(getExams);
+router.route("/downloads").get(downloads);
 
 module.exports = router;
