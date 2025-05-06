@@ -33,7 +33,9 @@ export const Home = () => {
   useEffect(() => {
     const getExams = async () => {
       try {
-        const res = await axios.get(`${exambankAPI}/api/exams/all-exams`);
+        const res = await axios.get(`${exambankAPI}/api/exams/all-exams`, {
+          withCredentials: true,
+        });
 
         if (res.data) {
           setExams(res.data);
