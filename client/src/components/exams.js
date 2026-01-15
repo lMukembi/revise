@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Examcard } from "./examcard";
 
 // const exambankAPI = "http://localhost:8000";
-const exambankAPI = "https://api.revise.co.ke";
+const exambankAPI = "https://app.revise.co.ke";
 
 export const Exams = ({ searchTerm }) => {
   const [exams, setExams] = useState([]);

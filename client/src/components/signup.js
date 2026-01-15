@@ -6,7 +6,7 @@ import "../styles/signup.css";
 import axios from "axios";
 
 // const exambankAPI = "http://localhost:8000";
-const exambankAPI = "https://api.revise.co.ke";
+const exambankAPI = "https://app.revise.co.ke";
 
 export const Signup = () => {
   const [name, setName] = useState("");

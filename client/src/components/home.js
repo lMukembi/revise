@@ -9,8 +9,8 @@ import axios from "axios";
 // import io from "socket.io-client";
 
 // const exambankAPI = "http://localhost:8000";
-const exambankAPI = "https://api.revise.co.ke";
-// const socket = io("https://api.revise.co.ke");
+const exambankAPI = "https://app.revise.co.ke";
+// const socket = io("https://app.revise.co.ke");
 
 export const Home = () => {
   const userData = JSON.parse(localStorage.getItem("JSUD"));

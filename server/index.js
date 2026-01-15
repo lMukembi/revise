@@ -17,7 +17,7 @@ const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
 //     origin: [
 //       "https://revise.co.ke",
 //       "https://www.revise.co.ke",
-//       "https://api.revise.co.ke",
+//       "https://app.revise.co.ke",
 //     ],
 //     methods: ["GET", "POST"],
 //     credentials: true,
@@ -32,7 +32,7 @@ const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
 
 const corsOptions = {
   origin: [
-    "https://api.revise.co.ke",
+    "https://app.revise.co.ke",
     "https://revise.co.ke",
     "https://www.revise.co.ke",
   ],
