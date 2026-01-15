@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 const connectionDB = require("./connection.js");
 // const http = require("http");
 // const { Server } = require("socket.io");
@@ -30,6 +31,11 @@ const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
 //   console.log("Socket connected:", socket.id);
 // });
 
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const corsOptions = {
   origin: [
     "https://app.revise.co.ke",
@@ -52,6 +58,7 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.use("/api/user", require("./routes/user"));
 app.use("/api/exams", require("./routes/exams"));
+app.use("/uploads", express.static(uploadDir));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/pages", express.static(path.join(__dirname, "public", "pages")));
 app.use(
