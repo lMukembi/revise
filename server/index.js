@@ -38,9 +38,9 @@ if (!fs.existsSync(uploadDir)) {
 
 const corsOptions = {
   origin: [
-    "https://app.revise.co.ke",
     "https://revise.co.ke",
     "https://www.revise.co.ke",
+    "https://app.revise.co.ke",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
