@@ -3,8 +3,6 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const connectionDB = require("./connection.js");
-// const http = require("http");
-// const { Server } = require("socket.io");
 
 require("dotenv").config();
 const app = express();
@@ -12,45 +10,33 @@ const port = 8000;
 const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
 //  const MONGO_URI =  "mongodb+srv://apexadverts:1919@apexadverts.e1ng8.mongodb.net/?retryWrites=true&w=majority&appName=ApexAdverts"
 
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: [
-//       "https://revise.co.ke",
-//       "https://www.revise.co.ke",
-//       "https://app.revise.co.ke",
-//     ],
-//     methods: ["GET", "POST"],
-//     credentials: true,
-//   },
-// });
-
-// global.io = io;
-
-// io.on("connection", (socket) => {
-//   console.log("Socket connected:", socket.id);
-// });
-
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const corsOptions = {
-  origin: [
-    "https://revise.co.ke",
-    "https://www.revise.co.ke",
-    "https://app.revise.co.ke",
-  ],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-  exposedHeaders: ["Authorization"],
-};
+const allowedOrigins = [
+  "https://revise.co.ke",
+  "https://www.revise.co.ke",
+  "https://app.revise.co.ke",
+];
 
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-app.options("*", cors(corsOptions));
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -59,7 +45,6 @@ app.use(express.static(path.join(__dirname, "../client/build")));
 app.use("/api/user", require("./routes/user"));
 app.use("/api/exams", require("./routes/exams"));
 app.use("/uploads", express.static(uploadDir));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/pages", express.static(path.join(__dirname, "public", "pages")));
 app.use(
   "/sitemap.xml",
