@@ -1,0 +1,76 @@
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const connectionDB = require("./connection.js");
+
+require("dotenv").config();
+const app = express();
+const port = 8000;
+const MONGO_URI = "mongodb://revise:1919@127.0.0.1:27017/reviseapp";
+//  const MONGO_URI =  "mongodb+srv://apexadverts:1919@apexadverts.e1ng8.mongodb.net/?retryWrites=true&w=majority&appName=ApexAdverts"
+
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://revise.co.ke",
+    "https://www.revise.co.ke",
+    "https://app.revise.co.ke",
+  ];
+
+  const origin = req.headers.origin || req.headers["x-forwarded-origin"];
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.use("/api/user", require("./routes/user"));
+app.use("/api/exams", require("./routes/exams"));
+app.use("/pages", express.static(path.join(__dirname, "public", "pages")));
+app.use(
+  "/sitemap.xml",
+  express.static(path.join(__dirname, "public", "sitemap.xml")),
+);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
+
+const DBConnection = async () => {
+  try {
+    await connectionDB(MONGO_URI);
+
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`server is running on port ${port}`);
+    });
+  } catch (err) {
+    console.log(err.message);
+    process.exit(1);
+  }
+};
+
+DBConnection();

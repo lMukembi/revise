@@ -1,0 +1,57 @@
+.examcard {
+  display: flex;
+  margin: 10px 0px 2rem 0px;
+  flex-direction: column;
+}
+
+.examcard .unit {
+  font-size: large;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.examcard .download {
+  cursor: pointer;
+  color: #9d2e34;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.examcard .download .downloadicon {
+  font-size: 25px;
+}
+
+.examcard .others {
+  margin-left: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: small;
+  max-width: 100%;
+}
+
+.examcard .others small:nth-child(1),
+.examcard .others small:nth-child(3) {
+  white-space: nowrap;
+}
+
+.examcard .others span {
+  margin: 0px 5px;
+}
+
+.examcard .others small:nth-child(2) {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  flex-grow: 1;
+}
+
+/* DESKTOP */
+
+@media only screen and (min-width: 768px) {
+  .examcard {
+    margin: 2rem 0px 2rem 3rem;
+  }
+}
