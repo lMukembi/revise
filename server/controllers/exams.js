@@ -35,10 +35,8 @@ exports.addExam = async (req, res) => {
 };
 
 exports.getExams = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const exams = await Exams.find({ userID: id }).sort({ createdAt: -1 });
+    const exams = await Exams.find().sort({ createdAt: -1 });
 
     return res.status(200).json(exams);
   } catch (error) {
