@@ -13,7 +13,7 @@ const upload = multer({
       cb(new Error("Only PDF files allowed"), false);
     }
   },
-  limits: { fileSize: 50 * 1024 * 1024 },
+  limits: { fileSize: 100 * 1024 * 1024 },
 });
 
 const { addExam, getExams } = require("../controllers/exams");

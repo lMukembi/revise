@@ -1,5 +1,5 @@
 const Exams = require("../models/exams");
-const uploadPDFToR2 = require("../utils/r2");
+const { uploadPDFToR2 } = require("../utils/r2");
 
 exports.addExam = async (req, res) => {
   const { code, unit, id, school, programme, year } = req.body;
