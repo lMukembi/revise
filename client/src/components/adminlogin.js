@@ -3,7 +3,7 @@ import React from "react";
 export const AdminLogin = () => {
   return (
     <div>
-      <h2>Exam Bank System</h2>
+      <h2>Revise</h2>
       <form>
         <input
           type="text"

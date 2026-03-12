@@ -19,7 +19,7 @@ export const Signup = () => {
   const navigate = useNavigate();
 
   const filteredSchools = Schools.filter((school) =>
-    school.label.toLowerCase().includes(searchTerm.toLowerCase())
+    school.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const processSignup = async (e) => {
@@ -41,7 +41,7 @@ export const Signup = () => {
           JSON.stringify({
             SESSID: res.data.result._id,
             UTKN: res.data.tokenID,
-          })
+          }),
         );
         navigate("/");
         alert("Signup success!");
@@ -59,7 +59,7 @@ export const Signup = () => {
     <div className="signupwrapper">
       <form className="signup" onSubmit={(e) => processSignup(e)}>
         <img src={Logo} alt="Revise" />
-        <span>Revise | Exam Bank</span>
+        <span>Revise</span>
 
         <div className="custom-select">
           <input

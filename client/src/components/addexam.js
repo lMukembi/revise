@@ -34,7 +34,7 @@ export const Addexam = () => {
   const navigate = useNavigate();
 
   const filteredProgrammes = Programmes.filter((programme) =>
-    programme.label.toLowerCase().includes(searchTerm.toLowerCase())
+    programme.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const logoutUser = () => {
@@ -79,7 +79,7 @@ export const Addexam = () => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
 
         if (res.data) {
@@ -108,7 +108,7 @@ export const Addexam = () => {
         }
         const userID = userInfo.SESSID;
         const res = await axios.get(
-          `${exambankAPI}/api/user/${userID}/user-data`
+          `${exambankAPI}/api/user/${userID}/user-data`,
         );
         if (res.data) {
           setSchool(res.data.school);
@@ -131,7 +131,7 @@ export const Addexam = () => {
         <div className="examwrapper">
           <div className="header">
             <h2>
-              <img src={Logo} alt="Revise" /> Revise | Exam Bank
+              <img src={Logo} alt="Revise" /> Revise
             </h2>
             <div className="logout">
               <MdLogout onClick={() => logoutUser()} />

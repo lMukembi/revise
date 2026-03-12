@@ -32,7 +32,7 @@ export const Login = () => {
           "JSUD",
           JSON.stringify({
             SESSID: res.data.result._id,
-          })
+          }),
         );
         alert("Login success!");
         navigate(redirectPath, { replace: true });
@@ -51,7 +51,7 @@ export const Login = () => {
       <form className="login" onSubmit={(e) => processLogin(e)}>
         <img src={Logo} alt="Revise" />
 
-        <span>Revise | Exam Bank</span>
+        <span>Revise</span>
 
         <input
           type="text"

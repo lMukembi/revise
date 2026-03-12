@@ -35,7 +35,7 @@ function sendEmail(subject, text) {
       } else {
         log("Email sent: " + info.response);
       }
-    }
+    },
   );
 }
 
@@ -62,7 +62,7 @@ if (pdfFiles.length === 0) {
 
     const encodedFileUrl = `${siteBaseUrl}/uploads/${encodeURIComponent(file)}`;
     const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
-      htmlFileName
+      htmlFileName,
     )}`;
 
     const htmlContent = `
@@ -103,7 +103,7 @@ ${sitemapEntries
   <url>
     <loc>${entry.loc}</loc>
     <lastmod>${entry.lastmod}</lastmod>
-  </url>`
+  </url>`,
   )
   .join("")}
 </urlset>`;
@@ -113,7 +113,7 @@ ${sitemapEntries
 
   sendEmail(
     "PDFs and Sitemap Generated",
-    "All exam PDF pages and sitemap.xml have been successfully generated."
+    "All exam PDF pages and sitemap.xml have been successfully generated.",
   );
 }
 

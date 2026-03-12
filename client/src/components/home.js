@@ -6,11 +6,9 @@ import { Exams } from "./exams";
 import { MdLogout } from "react-icons/md";
 import Logo from "../assets/logo.png";
 import axios from "axios";
-// import io from "socket.io-client";
 
 // const exambankAPI = "http://localhost:8000";
 const exambankAPI = "https://app.revise.co.ke";
-// const socket = io("https://app.revise.co.ke");
 
 export const Home = () => {
   const userData = JSON.parse(localStorage.getItem("JSUD"));
@@ -69,7 +67,7 @@ export const Home = () => {
       <div className="header">
         <h2>
           <img src={Logo} alt="Revise" />
-          Revise | Exam Bank
+          Revise
         </h2>
 
         {window.innerWidth > 768 ? (
@@ -77,14 +75,21 @@ export const Home = () => {
             <div className="addexam" onClick={handleAddExam}>
               Add exam
             </div>
-            <div>
-              <MdLogout className="logout" onClick={() => logoutUser()} />
-            </div>
+
+            {userData && (
+              <div>
+                <MdLogout className="logout" onClick={() => logoutUser()} />
+              </div>
+            )}
           </div>
         ) : (
-          <div className="logout">
-            <MdLogout onClick={() => logoutUser()} />
-          </div>
+          <>
+            {userData && (
+              <div className="logout">
+                <MdLogout onClick={() => logoutUser()} />
+              </div>
+            )}
+          </>
         )}
       </div>
       <div>
