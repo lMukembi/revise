@@ -21,22 +21,19 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-function sendEmail(subject, text) {
-  transporter.sendMail(
-    {
+async function sendEmail(subject, text) {
+  try {
+    const info = await transporter.sendMail({
       from: "mukembileviticus@gmail.com",
       to: "exams.revise@gmail.com",
       subject,
       text,
-    },
-    (err, info) => {
-      if (err) {
-        log("Email failed: " + err.message);
-      } else {
-        log("Email sent: " + info.response);
-      }
-    },
-  );
+    });
+
+    log("Email sent: " + info.response);
+  } catch (err) {
+    log("Email failed: " + err.message);
+  }
 }
 
 const pdfDir = path.join(__dirname, "..", "uploads");

@@ -23,7 +23,12 @@ router.post("/:id/addexam", upload.single("file"), async (req, res, next) => {
     await addExam(req, res);
 
     const scriptPath = path.join(__dirname, "../scripts/generatePages.js");
-    exec(`node ${scriptPath}`);
+
+    exec(`node ${scriptPath}`, (error, stdout, stderr) => {
+      if (error) console.error("Script error:", error);
+      if (stderr) console.error(stderr);
+      if (stdout) console.log(stdout);
+    });
   } catch (err) {
     next(err);
   }
