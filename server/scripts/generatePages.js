@@ -16,15 +16,15 @@ function log(message) {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "mukembileviticus@gmail.com",
-    pass: "xsmc pxdb twfr xrsq",
+    user: "exams.revise@gmail.com",
+    pass: "hdfr czhk nwes pkri",
   },
 });
 
 async function sendEmail(subject, text) {
   try {
     const info = await transporter.sendMail({
-      from: "mukembileviticus@gmail.com",
+      from: '"Revise Exams" <exams@revise.co.ke>',
       to: "exams.revise@gmail.com",
       subject,
       text,
@@ -36,33 +36,35 @@ async function sendEmail(subject, text) {
   }
 }
 
-const pdfDir = path.join(__dirname, "..", "uploads");
 const outputDir = path.join(__dirname, "..", "public", "pages");
 const sitemapPath = path.join(__dirname, "..", "public", "sitemap.xml");
+
 const siteBaseUrl = "https://revise.co.ke";
+const cdnBaseUrl = "https://cdn.revise.co.ke";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
 let sitemapEntries = [];
 
-const pdfFiles = fs.readdirSync(pdfDir).filter((file) => file.endsWith(".pdf"));
+const file = process.argv[2];
 
-if (pdfFiles.length === 0) {
-  log("No PDF files found in the uploads directory.");
-} else {
-  log(`Found ${pdfFiles.length} PDF files to process.`);
+if (!file) {
+  log("No PDF filename provided to generator.");
+  process.exit();
+}
 
-  pdfFiles.forEach((file) => {
-    const fileName = path.parse(file).name;
-    const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
-    const htmlFileName = fileName + ".html";
+log(`Processing uploaded PDF: ${file}`);
 
-    const encodedFileUrl = `${siteBaseUrl}/uploads/${encodeURIComponent(file)}`;
-    const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
-      htmlFileName,
-    )}`;
+const fileName = path.parse(file).name;
+const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
+const htmlFileName = fileName + ".html";
 
-    const htmlContent = `
+const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
+const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
+  htmlFileName,
+)}`;
+
+const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,21 +80,21 @@ if (pdfFiles.length === 0) {
 </body>
 </html>`;
 
-    fs.writeFileSync(path.join(outputDir, htmlFileName), htmlContent);
+fs.writeFileSync(path.join(outputDir, htmlFileName), htmlContent);
 
-    log(`Generated HTML page for: ${pageTitle}`);
+log(`Generated HTML page for: ${pageTitle}`);
 
-    sitemapEntries.push({
-      loc: encodedFileUrl,
-      lastmod: new Date().toISOString(),
-    });
-    sitemapEntries.push({
-      loc: encodedHtmlUrl,
-      lastmod: new Date().toISOString(),
-    });
-  });
+sitemapEntries.push({
+  loc: encodedFileUrl,
+  lastmod: new Date().toISOString(),
+});
 
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+sitemapEntries.push({
+  loc: encodedHtmlUrl,
+  lastmod: new Date().toISOString(),
+});
+
+const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapEntries
   .map(
@@ -105,13 +107,12 @@ ${sitemapEntries
   .join("")}
 </urlset>`;
 
-  fs.writeFileSync(sitemapPath, sitemapXml);
-  log("Sitemap.xml generated successfully.");
+fs.writeFileSync(sitemapPath, sitemapXml);
+log("Sitemap.xml generated successfully.");
 
-  sendEmail(
-    "PDFs and Sitemap Generated",
-    "All exam PDF pages and sitemap.xml have been successfully generated.",
-  );
-}
+sendEmail(
+  "PDF Uploaded",
+  `${file} was uploaded. HTML page and sitemap entry generated successfully.`,
+);
 
 log("Pages and sitemap.xml generation process completed.");
