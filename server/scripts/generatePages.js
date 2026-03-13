@@ -48,39 +48,27 @@ if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
 let sitemapEntries = [];
 
-const pdfFiles = fs
-  .readdirSync(outputDir)
-  .filter((file) => file.toLowerCase().endsWith(".pdf"));
+const fileArg = process.argv[2];
 
-if (pdfFiles.length === 0) {
-  log("No PDF files found.");
+if (!fileArg) {
+  log("No PDF filename provided.");
   process.exit();
 }
 
-log(`Found ${pdfFiles.length} PDFs.`);
+const file = path.basename(fileArg);
 
-const parseExistingSitemap = () => {
-  if (!fs.existsSync(sitemapPath)) return [];
-  const data = fs.readFileSync(sitemapPath, "utf-8");
-  const urlMatches = [...data.matchAll(/<loc>(.*?)<\/loc>/g)];
-  return urlMatches.map((m) => m[1]);
-};
+log(`Processing uploaded PDF ${file}`);
 
-const existingUrls = parseExistingSitemap();
+const fileName = path.parse(file).name;
+const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
+const htmlFileName = fileName + ".html";
 
-pdfFiles.forEach((file) => {
-  log(`Processing PDF: ${file}`);
+const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
+const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
+  htmlFileName,
+)}`;
 
-  const fileName = path.parse(file).name;
-  const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
-  const htmlFileName = fileName + ".html";
-
-  const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
-  const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
-    htmlFileName,
-  )}`;
-
-  const htmlContent = `
+const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,24 +84,31 @@ pdfFiles.forEach((file) => {
 </body>
 </html>`;
 
-  fs.writeFileSync(path.join(outputDir, htmlFileName), htmlContent);
+fs.writeFileSync(path.join(outputDir, htmlFileName), htmlContent);
 
-  log(`Generated HTML page for: ${pageTitle}`);
+log(`Generated HTML page for ${pageTitle}`);
 
-  if (!existingUrls.includes(encodedFileUrl)) {
-    sitemapEntries.push({
-      loc: encodedFileUrl,
-      lastmod: new Date().toISOString(),
-    });
-  }
+const parseExistingSitemap = () => {
+  if (!fs.existsSync(sitemapPath)) return [];
+  const data = fs.readFileSync(sitemapPath, "utf-8");
+  const urlMatches = [...data.matchAll(/<loc>(.*?)<\/loc>/g)];
+  return urlMatches.map((m) => m[1]);
+};
 
-  if (!existingUrls.includes(encodedHtmlUrl)) {
-    sitemapEntries.push({
-      loc: encodedHtmlUrl,
-      lastmod: new Date().toISOString(),
-    });
-  }
-});
+const existingUrls = parseExistingSitemap();
+
+if (!existingUrls.includes(encodedFileUrl)) {
+  sitemapEntries.push({
+    loc: encodedFileUrl,
+    lastmod: new Date().toISOString(),
+  });
+}
+if (!existingUrls.includes(encodedHtmlUrl)) {
+  sitemapEntries.push({
+    loc: encodedHtmlUrl,
+    lastmod: new Date().toISOString(),
+  });
+}
 
 existingUrls.forEach((url) => {
   if (!sitemapEntries.find((e) => e.loc === url)) {
@@ -174,7 +169,7 @@ log("Sitemap index generated successfully.");
 
 sendEmail(
   "PDFs and Sitemap Generated",
-  `${pdfFiles.length} PDFs processed. HTML pages and sitemap.xml generated successfully.`,
+  `${file} was uploaded. HTML pages and sitemap.xml have been generated successfully.`,
 );
 
 log("HTML Pages and sitemap.xml generation process completed.");
