@@ -39,7 +39,7 @@ async function sendEmail(subject, text) {
 }
 
 const outputDir = path.join(__dirname, "..", "public", "pages");
-const sitemapPath = path.join(__dirname, "..", "public", "sitemap.xml");
+const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
 
 const siteBaseUrl = "https://revise.co.ke";
 const cdnBaseUrl = "https://cdn.revise.co.ke";
