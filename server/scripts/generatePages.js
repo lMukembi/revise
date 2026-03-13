@@ -39,7 +39,6 @@ async function sendEmail(subject, text) {
 }
 
 const outputDir = path.join(__dirname, "..", "public", "pages");
-const publicDir = path.join(__dirname, "..", "public");
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
 
 const siteBaseUrl = "https://revise.co.ke";
@@ -50,15 +49,15 @@ if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 let sitemapEntries = [];
 
 const pdfFiles = fs
-  .readdirSync(publicDir)
+  .readdirSync(outputDir)
   .filter((file) => file.toLowerCase().endsWith(".pdf"));
 
 if (pdfFiles.length === 0) {
-  log("No PDF files found in /public directory.");
+  log("No PDF files found.");
   process.exit();
 }
 
-log(`Found ${pdfFiles.length} PDFs in /public`);
+log(`Found ${pdfFiles.length} PDFs.`);
 
 const parseExistingSitemap = () => {
   if (!fs.existsSync(sitemapPath)) return [];
