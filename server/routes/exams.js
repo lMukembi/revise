@@ -24,11 +24,14 @@ router.post("/:id/addexam", upload.single("file"), async (req, res, next) => {
 
     const scriptPath = path.join(__dirname, "../scripts/generatePages.js");
 
-    exec(`node ${scriptPath}`, (error, stdout, stderr) => {
-      if (error) console.error("Script error:", error);
-      if (stderr) console.error(stderr);
-      if (stdout) console.log(stdout);
-    });
+    exec(
+      `node ${scriptPath} "${req.file.originalname}"`,
+      (error, stdout, stderr) => {
+        if (error) console.error("Script error:", error);
+        if (stderr) console.error(stderr);
+        if (stdout) console.log(stdout);
+      },
+    );
   } catch (err) {
     next(err);
   }
