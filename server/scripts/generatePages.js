@@ -46,12 +46,14 @@ if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
 let sitemapEntries = [];
 
-const file = process.argv[2];
+const fileArg = process.argv[2];
 
-if (!file) {
+if (!fileArg) {
   log("No PDF filename provided to generator.");
   process.exit();
 }
+
+const file = path.basename(fileArg);
 
 log(`Processing uploaded PDF: ${file}`);
 
