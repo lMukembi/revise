@@ -15,18 +15,20 @@ function log(message) {
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  port: 587,
+  secure: false,
   auth: {
     user: "exams.revise@gmail.com",
     pass: "hdfr czhk nwes pkri",
   },
 });
 
-async function sendEmail(subject, text) {
+async function sendEmail(text) {
   try {
     const info = await transporter.sendMail({
       from: '"Revise Exams" <exams@revise.co.ke>',
       to: "exams.revise@gmail.com",
-      subject,
+      subject: "Revise Exams",
       text,
     });
 
