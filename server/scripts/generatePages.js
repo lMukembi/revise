@@ -18,18 +18,18 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: "exams.revise@gmail.com",
-    pass: "hdfr czhk nwes pkri",
+    user: "mukembileviticus@gmail.com",
+    pass: "vpkj yulh oatw aidm",
   },
 });
 
-async function sendEmail() {
+async function sendEmail(subject, text) {
   try {
     const info = await transporter.sendMail({
       from: '"Revise Exams" <exams@revise.co.ke>',
       to: "exams.revise@gmail.com",
-      subject: "PDF Uploaded",
-      text: "Revise Exams",
+      subject,
+      text,
     });
 
     log("Email sent: " + info.response);
@@ -115,7 +115,8 @@ fs.writeFileSync(sitemapPath, sitemapXml);
 log("Sitemap.xml generated successfully.");
 
 sendEmail(
-  `${file} was uploaded. HTML page and sitemap entry generated successfully.`,
+  "PDFs and Sitemap Generated",
+  `${file} was uploaded. HTML pages and sitemap.xml have been generated successfully.`,
 );
 
-log("Pages and sitemap.xml generation process completed.");
+log("HTML Pages and sitemap.xml generation process completed.");
