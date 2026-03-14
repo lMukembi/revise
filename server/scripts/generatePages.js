@@ -60,6 +60,15 @@ if (pdfFiles.length === 0) {
 
 log(`${pdfFiles.length} PDFs found.`);
 
+const parseExistingSitemap = () => {
+  if (!fs.existsSync(sitemapPath)) return [];
+  const data = fs.readFileSync(sitemapPath, "utf-8");
+  const urlMatches = [...data.matchAll(/<loc>(.*?)<\/loc>/g)];
+  return urlMatches.map((m) => m[1]);
+};
+
+const existingUrls = parseExistingSitemap();
+
 pdfFiles.forEach((file) => {
   log(`Processing PDF ${file}`);
 
@@ -158,7 +167,7 @@ log("Sitemap index generated successfully.");
 
 sendEmail(
   "PDFs and Sitemap Generated",
-  `${file} was uploaded. HTML pages and sitemap.xml have been generated successfully.`,
+  `${pdfFiles.length} PDFs processed. HTML pages and sitemap.xml have been generated successfully.`,
 );
 
 log("HTML Pages and sitemap.xml generation process completed.");
