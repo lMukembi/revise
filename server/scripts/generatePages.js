@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
-const logFilePath = path.join(__dirname, "..", "logs", "generator.log");
+const logFilePath = path.join(__dirname, "logs", "generator.log");
 
 fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
 
@@ -38,7 +38,7 @@ async function sendEmail(subject, text) {
   }
 }
 
-const outputDir = path.join(__dirname, "..", "public", "pages");
+const outputDir = path.join(__dirname, "public", "pages");
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
 
 const siteBaseUrl = "https://revise.co.ke";
