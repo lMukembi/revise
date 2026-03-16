@@ -37,7 +37,7 @@ async function sendEmail(subject, text) {
   }
 }
 
-const publicDir = path.join(__dirname, "..", "public", "pages");
+const publicDir = "/var/www/revise/server/public/pages";
 const outputDir = publicDir;
 
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
@@ -47,7 +47,7 @@ const cdnBaseUrl = "https://cdn.revise.co.ke";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-log("Scanning /public directory for PDFs...");
+log(`Scanning ${publicDir} for PDFs...`);
 
 const pdfFiles = fs.readdirSync(publicDir).filter((f) => f.endsWith(".pdf"));
 
