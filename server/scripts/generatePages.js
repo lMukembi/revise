@@ -1,8 +1,22 @@
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
+const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: "https://12460cf19b8e36e1616b6d950df74b06.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: "a1c9d8b9653c37166723b2a309d519b2",
+    secretAccessKey:
+      "f7f7005148ec98e47511c3ee7fd98fa8765b30b2f1f7315e296a569616b1081d",
+  },
+});
+
+const R2_BUCKET = "revise-pdfs";
 
 const logFilePath = path.join(__dirname, "..", "logs", "generator.log");
+
 fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
 
 function log(message) {
@@ -37,9 +51,7 @@ async function sendEmail(subject, text) {
   }
 }
 
-const publicDir = "/var/www/revise/server/public/pages";
-const outputDir = publicDir;
-
+const outputDir = path.join(__dirname, "..", "public", "pages");
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
 
 const siteBaseUrl = "https://revise.co.ke";
@@ -47,137 +59,148 @@ const cdnBaseUrl = "https://cdn.revise.co.ke";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-log(`Scanning ${publicDir} for PDFs...`);
-
-const pdfFiles = fs.readdirSync(publicDir).filter((f) => f.endsWith(".pdf"));
-
-if (pdfFiles.length === 0) {
-  log("No PDF files found.");
-  process.exit();
-}
-
 let sitemapEntries = [];
 
-pdfFiles.forEach((file) => {
-  const fileName = path.parse(file).name;
-  const htmlFileName = fileName + ".html";
+async function getR2PdfFiles() {
+  const command = new ListObjectsV2Command({
+    Bucket: R2_BUCKET,
+  });
 
-  const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
+  const response = await r2.send(command);
 
-  const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
-  const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(htmlFileName)}`;
+  return (response.Contents || [])
+    .map((obj) => obj.Key)
+    .filter((file) => file.toLowerCase().endsWith(".pdf"));
+}
 
-  const htmlFilePath = path.join(outputDir, htmlFileName);
+async function run() {
+  const pdfFiles = await getR2PdfFiles();
 
-  if (!fs.existsSync(htmlFilePath)) {
+  if (!pdfFiles.length) {
+    log("No PDFs found in R2 bucket.");
+    process.exit();
+  }
+
+  log(`Processing ${pdfFiles.length} PDFs from R2.`);
+
+  pdfFiles.forEach((file) => {
+    const fileName = path.parse(file).name;
+    const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
+    const htmlFileName = fileName + ".html";
+
+    const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
+    const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(htmlFileName)}`;
+
     const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Revise | Free Download ${pageTitle} Exam PDF Kenya</title>
-
-<meta name="description"
-content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta charset="UTF-8" />
+  <title>Revise | Free Download ${pageTitle} Exam PDF Kenya</title>
+  <meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-
 <body>
-
-<h1>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</h1>
-
-<p>
-This page provides the ${pageTitle} past exam paper in PDF format for
-free download. Students preparing for exams can download and revise
-using real past exam questions.
-</p>
-
-<a href="${encodedFileUrl}" download>Download PDF</a>
-
+  <h1>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</h1>
+  <p>This page provides the ${pageTitle} past exam paper in PDF format for free download. Students preparing for exams can download and revise using real past exam questions.</p>
+  <a href="${encodedFileUrl}" download>Download PDF</a>
 </body>
-</html>
-`;
+</html>`;
 
-    fs.writeFileSync(htmlFilePath, htmlContent);
+    const htmlPath = path.join(outputDir, htmlFileName);
+    if (fs.existsSync(htmlPath)) return;
 
-    log(`Generated HTML page: ${htmlFileName}`);
-  }
+    fs.writeFileSync(htmlPath, htmlContent);
 
-  sitemapEntries.push({
-    loc: encodedFileUrl,
-    lastmod: new Date().toISOString(),
+    log(`Generated HTML page for ${pageTitle}`);
+
+    if (!existingUrls.includes(encodedFileUrl)) {
+      sitemapEntries.push({
+        loc: encodedFileUrl,
+        lastmod: new Date().toISOString(),
+      });
+    }
+
+    if (!existingUrls.includes(encodedHtmlUrl)) {
+      sitemapEntries.push({
+        loc: encodedHtmlUrl,
+        lastmod: new Date().toISOString(),
+      });
+    }
+  });
+}
+
+const parseExistingSitemap = () => {
+  if (!fs.existsSync(sitemapPath)) return [];
+  const data = fs.readFileSync(sitemapPath, "utf-8");
+  const urlMatches = [...data.matchAll(/<loc>(.*?)<\/loc>/g)];
+  return urlMatches.map((m) => m[1]);
+};
+
+run().then(() => {
+  const existingUrls = parseExistingSitemap();
+
+  existingUrls.forEach((url) => {
+    if (!sitemapEntries.find((e) => e.loc === url)) {
+      sitemapEntries.push({ loc: url, lastmod: new Date().toISOString() });
+    }
   });
 
-  sitemapEntries.push({
-    loc: encodedHtmlUrl,
-    lastmod: new Date().toISOString(),
-  });
-});
+  const MAX_URLS = 40000;
+  const sitemapDir = path.dirname(sitemapPath);
 
-log(`Found ${pdfFiles.length} PDFs.`);
+  let sitemapFiles = [];
+  let chunkIndex = 1;
 
-const MAX_URLS = 40000;
-const sitemapDir = path.dirname(sitemapPath);
+  for (let i = 0; i < sitemapEntries.length; i += MAX_URLS) {
+    const chunk = sitemapEntries.slice(i, i + MAX_URLS);
 
-let sitemapFiles = [];
-let chunkIndex = 1;
-
-for (let i = 0; i < sitemapEntries.length; i += MAX_URLS) {
-  const chunk = sitemapEntries.slice(i, i + MAX_URLS);
-
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-
+    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
 ${chunk
   .map(
     (entry) => `
-<url>
-<loc>${entry.loc}</loc>
-<lastmod>${entry.lastmod}</lastmod>
-</url>`,
+  <url>
+    <loc>${entry.loc}</loc>
+    <lastmod>${entry.lastmod}</lastmod>
+  </url>`,
   )
   .join("")}
-
 </urlset>`;
 
-  const sitemapFileName = `sitemap-${chunkIndex}.xml`;
-  const sitemapFilePath = path.join(sitemapDir, sitemapFileName);
+    const sitemapFileName = `sitemap-${chunkIndex}.xml`;
+    const sitemapFilePath = path.join(sitemapDir, sitemapFileName);
 
-  fs.writeFileSync(sitemapFilePath, sitemapXml);
+    fs.writeFileSync(sitemapFilePath, sitemapXml);
 
-  sitemapFiles.push(`${siteBaseUrl}/${sitemapFileName}`);
+    sitemapFiles.push(`${siteBaseUrl}/${sitemapFileName}`);
 
-  log(`${sitemapFileName} generated`);
+    log(`${sitemapFileName} generated.`);
 
-  chunkIndex++;
-}
+    chunkIndex++;
+  }
 
-const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
-
+  const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
 ${sitemapFiles
   .map(
     (url) => `
 <sitemap>
-<loc>${url}</loc>
-<lastmod>${new Date().toISOString()}</lastmod>
+  <loc>${url}</loc>
+  <lastmod>${new Date().toISOString()}</lastmod>
 </sitemap>`,
   )
   .join("")}
-
 </sitemapindex>`;
 
-fs.writeFileSync(sitemapPath, sitemapIndexXml);
+  fs.writeFileSync(sitemapPath, sitemapIndexXml);
 
-log("Sitemap index generated successfully.");
+  log("Sitemap index generated successfully.");
 
-sendEmail(
-  "PDF Scan Complete",
-  `${pdfFiles.length} PDFs scanned and sitemap updated automatically.`,
-);
+  sendEmail(
+    "PDFs and Sitemap Generated",
+    `${sitemapEntries.length} pages processed. HTML pages and sitemap.xml generated successfully.`,
+  );
 
-log("HTML + sitemap generation completed.");
+  log("HTML Pages and sitemap.xml generation process completed.");
+});
