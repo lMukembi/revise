@@ -37,8 +37,8 @@ async function sendEmail(subject, text) {
   }
 }
 
-const publicDir = path.join(__dirname, "..", "public");
-const outputDir = path.join(publicDir, "pages");
+const publicDir = path.join(__dirname, "..", "public", "pages");
+const outputDir = publicDir;
 
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
 
