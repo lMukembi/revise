@@ -121,6 +121,11 @@ async function run() {
   <link rel="canonical" href="${encodedHtmlUrl}">
   
   <style>
+    body {
+      font-family: Arial,
+      sans-serif;
+    }
+
     .home {
       width: 95%;
       margin: auto;
@@ -142,6 +147,7 @@ async function run() {
       margin: 10px auto 10px 10px;
       display: flex;
       align-items: center;
+      cursor: pointer;
     }
 
     .home .header h2 img {
@@ -286,7 +292,7 @@ async function run() {
   let sitemapFiles = [];
   let chunkIndex = 1;
 
-  const allUrls = [...existingUrls];
+  const allUrls = existingUrls.filter((url) => !url.includes("sitemap"));
   sitemapEntries.forEach((entry) => {
     if (!allUrls.includes(entry.loc)) allUrls.push(entry.loc);
   });
