@@ -122,31 +122,44 @@ async function run() {
 </head>
 <body>
   <h1>${pageTitle} Exam Paper PDF</h1>
-  <p>This page provides the <strong>${pageTitle}</strong> past exam paper in PDF format for free download. Students preparing for exams can revise using real past exam questions.</p>
+  <p>Download free ${pageTitle} past exam paper in PDF format. Students preparing for exams can revise using real past exam questions.</p>
   
-  <a href="javascript:void(0)" class="download-btn" id="downloadBtn">Download PDF</a>
+  <a href="#" class="download-btn" id="downloadBtn">Download PDF</a>
 
   <script>
     const fileUrl = "${encodedFileUrl}";
     const fileName = "${pageTitle}.pdf";
 
-    document.getElementById("downloadBtn").addEventListener("click", (e) => {
+    document.getElementById("downloadBtn").addEventListener("click", async (e) => {
       e.preventDefault();
 
-    
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      try {
+        const response = await fetch(fileUrl, { mode: 'cors' });
+        if (!response.ok) throw new Error("Network failed.");
+
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        window.URL.revokeObjectURL(blobUrl);
+
+      } catch (error) {
+        console.error("Download failed:", error);
+        alert("Failed to download file.");
+      }
     });
   </script>
   </body>
   </html>`;
 
       fs.writeFileSync(htmlPath, htmlContent);
-      log(`Generated HTML page for ${pageTitle}`);
+      log(`Generated HTML page for ${pageTitle}.`);
     }
 
     if (!existingUrls.includes(encodedFileUrl)) {
