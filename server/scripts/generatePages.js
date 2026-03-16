@@ -87,12 +87,19 @@ async function run() {
 
   pdfFiles.forEach((file) => {
     const fileName = path.parse(file).name;
-    const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
+
+    const pageTitle = fileName
+      .replace(/^\d+\s*/, "")
+      .replace(/[-_]/g, " ")
+      .toUpperCase();
 
     const slug = fileName
       .toLowerCase()
+      .replace(/^\d+/, "")
+      .trim()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9\-]/g, "");
+
     const htmlFileName = `${slug}.html`;
 
     const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
@@ -105,16 +112,45 @@ async function run() {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Revise | Free Download ${pageTitle} Exam PDF Kenya</title>
+  <title>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</title>
   <meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; }
+    h1 { color: #1a73e8; }
+    .download-btn { display: inline-block; padding: 12px 24px; background: #1a73e8; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 1rem; }
+  </style>
 </head>
 <body>
-  <h1>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</h1>
-  <p>This page provides the ${pageTitle} past exam paper in PDF format for free download. Students preparing for exams can download and revise using real past exam questions.</p>
-  <a href="${encodedFileUrl}" download>Download PDF</a>
+  <h1>${pageTitle} Exam Paper PDF Kenya</h1>
+  <p>This page provides the <strong>${pageTitle}</strong> past exam paper in PDF format for free download. Students preparing for exams can revise using real past exam questions.</p>
+  
+  <a href="#" class="download-btn" id="downloadBtn">Download PDF</a>
+
+  <script>
+    const fileUrl = "${encodedFileUrl}";
+
+    document.getElementById("downloadBtn").addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "${pageTitle}.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error("Download failed:", error);
+        alert("Failed to download file.");
+      }
+    });
+  </script>
 </body>
 </html>`;
+
       fs.writeFileSync(htmlPath, htmlContent);
       log(`Generated HTML page for ${pageTitle}`);
     }
