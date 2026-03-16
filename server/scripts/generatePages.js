@@ -115,7 +115,7 @@ async function run() {
   <meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; }
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; padding: 10px; }
     h1 { color: #9d2e34; }
     .download-btn { display: inline-block; padding: 12px 24px; background: #9d2e34; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 1rem; }
   </style>
@@ -124,31 +124,25 @@ async function run() {
   <h1>${pageTitle} Exam Paper PDF</h1>
   <p>This page provides the <strong>${pageTitle}</strong> past exam paper in PDF format for free download. Students preparing for exams can revise using real past exam questions.</p>
   
-  <a href="#" class="download-btn" id="downloadBtn">Download PDF</a>
+  <a href="${encodedFileUrl}" class="download-btn" id="downloadBtn">Download PDF</a>
 
   <script>
     const fileUrl = "${encodedFileUrl}";
+    const fileName = "${pageTitle}.pdf";
 
-    document.getElementById("downloadBtn").addEventListener("click", async (e) => {
+    document.getElementById("downloadBtn").addEventListener("click", (e) => {
       e.preventDefault();
-      try {
-        const response = await fetch(fileUrl);
-        const blob = await response.blob();
 
-        const link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = "${pageTitle}.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error("Download failed:", error);
-        alert("Failed to download file.");
-      }
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
   </script>
-</body>
-</html>`;
+  </body>
+  </html>`;
 
       fs.writeFileSync(htmlPath, htmlContent);
       log(`Generated HTML page for ${pageTitle}`);
