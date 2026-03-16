@@ -3,6 +3,10 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
+const logoPath = path.join(__dirname, "..", "assets", "logo.png");
+const logoBase64 = fs.readFileSync(logoPath).toString("base64");
+const logoDataUrl = `data:image/png;base64,${logoBase64}`;
+
 const r2 = new S3Client({
   region: "auto",
   endpoint: "https://12460cf19b8e36e1616b6d950df74b06.r2.cloudflarestorage.com",
@@ -114,21 +118,128 @@ async function run() {
   <title>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</title>
   <meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="canonical" href="${encodedHtmlUrl}">
+  
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; padding: 10px; }
-    h1 { color: #9d2e34; }
-    .download-btn { display: inline-block; padding: 12px 24px; background: #9d2e34; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 1rem; }
+    .home {
+      width: 95%;
+      margin: auto;
+    }
+
+    .home .header {
+      background-color: #9d2e34;
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .home .header h2 {
+      margin: 10px auto 10px 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .home .header h2 img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+    }
+
+    .home .header .headright {
+      display: flex;
+    }
+
+    .home .header .headright .addexam {
+      color: white;
+      cursor: pointer;
+      margin-right: 20px;
+    }
+
+    .content {
+      margin-top: 90px;
+      padding: 10px;
+      line-height: 1.6;
+    }
+
+    .content h1 {
+      color: #9d2e34;
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #9d2e34;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 1rem;
+    }
+
+    /* MOBILE */
+
+    @media only screen and (max-width: 768px) {
+
+      .home .header h2 {
+        font-size: 20px;
+      }
+
+    }
+
+    /* DESKTOP */
+
+    @media only screen and (min-width: 768px) {
+
+      .home {
+        width: 60%;
+        margin: 5rem auto;
+      }
+
+      .home .header h2 {
+        margin: 10px auto 10px 20%;
+      }
+
+      .home .header .headright {
+        margin-right: 20%;
+      }
+
+    }
   </style>
 </head>
+
 <body>
-  <h1>${pageTitle} Exam Paper PDF</h1>
-  <p>Download free ${pageTitle} past exam paper in PDF format. Students preparing for exams can revise using real past exam questions.</p>
-  
-  <a href="#" class="download-btn" id="downloadBtn">Download PDF</a>
+  <div class="home">
+    <div class="header">
+      <h2 onclick="location.href='https://revise.co.ke'">
+        <img src="${logoDataUrl}" alt="Revise"/>
+        Revise
+      </h2>
+
+      <div class="headright">
+        <div class="addexam" onclick="location.href='https://revise.co.ke/add-exam'">
+          Add exam
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <h1>${pageTitle} Exam Paper PDF</h1>
+
+      <p>Download free ${pageTitle} past exam paper in PDF format. Students preparing for exams can revise using real past exam questions from Kenyan universities and colleges.</p>
+      
+      <p> Practicing past papers helps you understand exam patterns, improve time management and boost confidence before your exams.</p>
+
+      <a href="#" class="download-btn" id="downloadBtn">Download PDF</a>
+    </div>
+  </div>
 
   <script>
     const fileUrl = "${encodedFileUrl}";
-    const fileName = "${pageTitle}.pdf";
+    const fileName = "${pageTitle}".trim() + ".pdf";
 
     document.getElementById("downloadBtn").addEventListener("click", async (e) => {
       e.preventDefault();
@@ -162,12 +273,6 @@ async function run() {
       log(`Generated HTML page for ${pageTitle}.`);
     }
 
-    if (!existingUrls.includes(encodedFileUrl)) {
-      sitemapEntries.push({
-        loc: encodedFileUrl,
-        lastmod: new Date().toISOString(),
-      });
-    }
     if (!existingUrls.includes(encodedHtmlUrl)) {
       sitemapEntries.push({
         loc: encodedHtmlUrl,
@@ -187,7 +292,10 @@ async function run() {
   });
 
   for (let i = 0; i < allUrls.length; i += MAX_URLS) {
-    const chunk = sitemapEntries.slice(i, i + MAX_URLS);
+    const chunk = allUrls.slice(i, i + MAX_URLS).map((url) => ({
+      loc: url,
+      lastmod: new Date().toISOString(),
+    }));
 
     const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -222,6 +330,7 @@ ${sitemapFiles
   )
   .join("")}
 </sitemapindex>`;
+
   fs.writeFileSync(sitemapPath, sitemapIndexXml);
   log("Sitemap index generated successfully.");
 
