@@ -226,7 +226,7 @@ async function run() {
       </h2>
 
       <div class="headright">
-        <div class="addexam" onclick="location.href='https://revise.co.ke/add-exam'">
+        <div class="addexam" onclick="handleAddExam()">
           Add exam
         </div>
       </div>
@@ -271,6 +271,17 @@ async function run() {
         alert("Failed to download file.");
       }
     });
+
+    function handleAddExam() {
+      const userInfo = JSON.parse(localStorage.getItem("JSUD"));
+
+      if (!userInfo) {
+        window.location.href = "https://revise.co.ke/login";
+        return;
+      }
+
+      window.location.href = "https://revise.co.ke/add-exam";
+    }
   </script>
   </body>
   </html>`;
