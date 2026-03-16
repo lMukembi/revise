@@ -3,7 +3,6 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 
 const logFilePath = path.join(__dirname, "..", "logs", "generator.log");
-
 fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
 
 function log(message) {
@@ -31,62 +30,85 @@ async function sendEmail(subject, text) {
       subject,
       text,
     });
-
     log("Email sent: " + info.response);
   } catch (err) {
     log("Email failed: " + err.message);
   }
 }
 
-const outputDir = path.join(__dirname, "..", "public", "pages");
+const publicDir = path.join(__dirname, "..", "public");
+const outputDir = path.join(publicDir, "pages");
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
-
 const siteBaseUrl = "https://revise.co.ke";
 const cdnBaseUrl = "https://cdn.revise.co.ke";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-let sitemapEntries = [];
+log("Starting automatic PDF → HTML + sitemap generator.");
 
-const fileArg = process.argv[2];
-
-if (!fileArg) {
-  log("No PDF filename provided.");
-  process.exit();
+let pdfFiles;
+try {
+  pdfFiles = fs
+    .readdirSync(publicDir)
+    .filter((file) => file.toLowerCase().endsWith(".pdf"));
+} catch (err) {
+  log(`Cannot read /public directory: ${err.message}`);
+  process.exit(1);
 }
 
-const file = path.basename(fileArg);
+if (pdfFiles.length === 0) {
+  log("No .pdf files found in /public.");
+  process.exit(0);
+}
 
-log(`Processing uploaded PDF ${file}`);
+let processedCount = 0;
+let newUrlsAdded = [];
 
-const fileName = path.parse(file).name;
-const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
-const htmlFileName = fileName + ".html";
+for (const file of pdfFiles) {
+  const fileName = path.parse(file).name;
+  const htmlFileName = fileName + ".html";
+  const htmlPath = path.join(outputDir, htmlFileName);
 
-const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
-const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(
-  htmlFileName,
-)}`;
+  if (fs.existsSync(htmlPath)) {
+    continue;
+  }
 
-const htmlContent = `
-<!DOCTYPE html>
+  log(`Processing new PDF: ${file}.`);
+
+  const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
+  const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
+  const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(htmlFileName)}`;
+
+  const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Revise | Free Download ${pageTitle} Exam PDF Kenya</title>
-  <meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<title>Revise | Free Download ${pageTitle} Exam PDF Kenya</title>
+<meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-  <h1>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</h1>
-  <p>This page provides the ${pageTitle} past exam paper in PDF format for free download. Students preparing for exams can download and revise using real past exam questions.</p>
-  <a href="${encodedFileUrl}" download>Download PDF</a>
+<h1>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</h1>
+<p>This page provides the ${pageTitle} past exam paper in PDF format for free download. Students preparing for exams can download and revise using real past exam questions.</p>
+<a href="${encodedFileUrl}" download>Download PDF</a>
 </body>
 </html>`;
 
-fs.writeFileSync(path.join(outputDir, htmlFileName), htmlContent);
+  fs.writeFileSync(htmlPath, htmlContent);
+  log(`Generated HTML page for ${pageTitle}.`);
 
-log(`Generated HTML page for ${pageTitle}`);
+  newUrlsAdded.push(encodedFileUrl);
+  newUrlsAdded.push(encodedHtmlUrl);
+
+  processedCount++;
+}
+
+if (processedCount === 0) {
+  log("No new PDFs to process.");
+  process.exit(0);
+}
+
+let sitemapEntries = [];
 
 const parseExistingSitemap = () => {
   if (!fs.existsSync(sitemapPath)) return [];
@@ -97,56 +119,50 @@ const parseExistingSitemap = () => {
 
 const existingUrls = parseExistingSitemap();
 
-if (!existingUrls.includes(encodedFileUrl)) {
-  sitemapEntries.push({
-    loc: encodedFileUrl,
-    lastmod: new Date().toISOString(),
-  });
-}
-if (!existingUrls.includes(encodedHtmlUrl)) {
-  sitemapEntries.push({
-    loc: encodedHtmlUrl,
-    lastmod: new Date().toISOString(),
-  });
-}
+newUrlsAdded.forEach((url) => {
+  if (!existingUrls.includes(url)) {
+    sitemapEntries.push({
+      loc: url,
+      lastmod: new Date().toISOString(),
+    });
+  }
+});
 
 existingUrls.forEach((url) => {
   if (!sitemapEntries.find((e) => e.loc === url)) {
-    sitemapEntries.push({ loc: url, lastmod: new Date().toISOString() });
+    sitemapEntries.push({
+      loc: url,
+      lastmod: new Date().toISOString(),
+    });
   }
 });
 
 const MAX_URLS = 40000;
 const sitemapDir = path.dirname(sitemapPath);
-
 let sitemapFiles = [];
 let chunkIndex = 1;
 
 for (let i = 0; i < sitemapEntries.length; i += MAX_URLS) {
   const chunk = sitemapEntries.slice(i, i + MAX_URLS);
-
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${chunk
   .map(
-    (entry) => `
-  <url>
-    <loc>${entry.loc}</loc>
-    <lastmod>${entry.lastmod}</lastmod>
-  </url>`,
+    (entry) => ` <url>
+  <loc>${entry.loc}</loc>
+  <lastmod>${entry.lastmod}</lastmod>
+ </url>`,
   )
   .join("")}
 </urlset>`;
 
-  const sitemapFileName = `sitemap-${chunkIndex}.xml`;
+  const sitemapFileName =
+    chunkIndex === 1 ? "sitemap.xml" : `sitemap-${chunkIndex}.xml`;
   const sitemapFilePath = path.join(sitemapDir, sitemapFileName);
 
   fs.writeFileSync(sitemapFilePath, sitemapXml);
-
   sitemapFiles.push(`${siteBaseUrl}/${sitemapFileName}`);
-
   log(`${sitemapFileName} generated.`);
-
   chunkIndex++;
 }
 
@@ -154,22 +170,20 @@ const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapFiles
   .map(
-    (url) => `
-<sitemap>
+    (url) => ` <sitemap>
   <loc>${url}</loc>
   <lastmod>${new Date().toISOString()}</lastmod>
-</sitemap>`,
+ </sitemap>`,
   )
   .join("")}
 </sitemapindex>`;
 
 fs.writeFileSync(sitemapPath, sitemapIndexXml);
-
 log("Sitemap index generated successfully.");
 
-sendEmail(
-  "PDFs and Sitemap Generated",
-  `${file} was uploaded. HTML pages and sitemap.xml have been generated successfully.`,
+await sendEmail(
+  "New PDFs and Sitemap Updated",
+  `${processedCount} new PDF file(s) processed.\nHTML pages and sitemap have been updated.`,
 );
 
-log("HTML Pages and sitemap.xml generation process completed.");
+log(`Automatic process completed — ${processedCount} new file(s) handled.`);
