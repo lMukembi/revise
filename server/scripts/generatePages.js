@@ -95,7 +95,6 @@ async function run() {
 
     const slug = fileName
       .toLowerCase()
-      .replace(/^\d+/, "")
       .trim()
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9\-]/g, "");
@@ -122,7 +121,7 @@ async function run() {
   </style>
 </head>
 <body>
-  <h1>${pageTitle} Exam Paper PDF Kenya</h1>
+  <h1>${pageTitle} Exam Paper PDF</h1>
   <p>This page provides the <strong>${pageTitle}</strong> past exam paper in PDF format for free download. Students preparing for exams can revise using real past exam questions.</p>
   
   <a href="#" class="download-btn" id="downloadBtn">Download PDF</a>
