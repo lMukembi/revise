@@ -124,7 +124,7 @@ async function run() {
   <h1>${pageTitle} Exam Paper PDF</h1>
   <p>This page provides the <strong>${pageTitle}</strong> past exam paper in PDF format for free download. Students preparing for exams can revise using real past exam questions.</p>
   
-  <a href="${encodedFileUrl}" class="download-btn" id="downloadBtn">Download PDF</a>
+  <a href="javascript:void(0)" class="download-btn" id="downloadBtn">Download PDF</a>
 
   <script>
     const fileUrl = "${encodedFileUrl}";
@@ -133,6 +133,7 @@ async function run() {
     document.getElementById("downloadBtn").addEventListener("click", (e) => {
       e.preventDefault();
 
+    
       const link = document.createElement("a");
       link.href = fileUrl;
       link.download = fileName;
