@@ -116,8 +116,8 @@ async function run() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; line-height: 1.6; }
-    h1 { color: #1a73e8; }
-    .download-btn { display: inline-block; padding: 12px 24px; background: #1a73e8; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 1rem; }
+    h1 { color: #9d2e34; }
+    .download-btn { display: inline-block; padding: 12px 24px; background: #9d2e34; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 1rem; }
   </style>
 </head>
 <body>
