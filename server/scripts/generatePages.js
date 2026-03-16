@@ -44,34 +44,32 @@ const cdnBaseUrl = "https://cdn.revise.co.ke";
 
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-log("Starting automatic PDF → HTML + sitemap generator.");
+log("Automatic PDF processor started.");
 
 let pdfFiles;
 try {
   pdfFiles = fs
     .readdirSync(publicDir)
-    .filter((file) => file.toLowerCase().endsWith(".pdf"));
-} catch (err) {
-  log(`Cannot read /public directory: ${err.message}`);
+    .filter((f) => f.toLowerCase().endsWith(".pdf"));
+} catch (e) {
+  log("Cannot read public directory: " + e.message);
   process.exit(1);
 }
 
 if (pdfFiles.length === 0) {
-  log("No .pdf files found in /public.");
+  log("No PDF files found in /public.");
   process.exit(0);
 }
 
-let processedCount = 0;
-let newUrlsAdded = [];
+let processed = 0;
+let newUrls = [];
 
 for (const file of pdfFiles) {
   const fileName = path.parse(file).name;
   const htmlFileName = fileName + ".html";
-  const htmlPath = path.join(outputDir, htmlFileName);
+  const htmlFullPath = path.join(outputDir, htmlFileName);
 
-  if (fs.existsSync(htmlPath)) {
-    continue;
-  }
+  if (fs.existsSync(htmlFullPath)) continue;
 
   log(`Processing new PDF: ${file}.`);
 
@@ -94,16 +92,15 @@ for (const file of pdfFiles) {
 </body>
 </html>`;
 
-  fs.writeFileSync(htmlPath, htmlContent);
-  log(`Generated HTML page for ${pageTitle}.`);
+  fs.writeFileSync(htmlFullPath, htmlContent);
+  log(`Generated HTML page for ${pageTitle}`);
 
-  newUrlsAdded.push(encodedFileUrl);
-  newUrlsAdded.push(encodedHtmlUrl);
-
-  processedCount++;
+  newUrls.push(encodedFileUrl);
+  newUrls.push(encodedHtmlUrl);
+  processed++;
 }
 
-if (processedCount === 0) {
+if (processed === 0) {
   log("No new PDFs to process.");
   process.exit(0);
 }
@@ -119,21 +116,15 @@ const parseExistingSitemap = () => {
 
 const existingUrls = parseExistingSitemap();
 
-newUrlsAdded.forEach((url) => {
+newUrls.forEach((url) => {
   if (!existingUrls.includes(url)) {
-    sitemapEntries.push({
-      loc: url,
-      lastmod: new Date().toISOString(),
-    });
+    sitemapEntries.push({ loc: url, lastmod: new Date().toISOString() });
   }
 });
 
 existingUrls.forEach((url) => {
   if (!sitemapEntries.find((e) => e.loc === url)) {
-    sitemapEntries.push({
-      loc: url,
-      lastmod: new Date().toISOString(),
-    });
+    sitemapEntries.push({ loc: url, lastmod: new Date().toISOString() });
   }
 });
 
@@ -146,20 +137,18 @@ for (let i = 0; i < sitemapEntries.length; i += MAX_URLS) {
   const chunk = sitemapEntries.slice(i, i + MAX_URLS);
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${chunk
-  .map(
-    (entry) => ` <url>
-  <loc>${entry.loc}</loc>
-  <lastmod>${entry.lastmod}</lastmod>
- </url>`,
-  )
-  .join("")}
+ ${chunk
+   .map(
+     (entry) => ` <url>
+   <loc>${entry.loc}</loc>
+   <lastmod>${entry.lastmod}</lastmod>
+  </url>`,
+   )
+   .join("\n")}
 </urlset>`;
 
-  const sitemapFileName =
-    chunkIndex === 1 ? "sitemap.xml" : `sitemap-${chunkIndex}.xml`;
+  const sitemapFileName = `sitemap-${chunkIndex}.xml`;
   const sitemapFilePath = path.join(sitemapDir, sitemapFileName);
-
   fs.writeFileSync(sitemapFilePath, sitemapXml);
   sitemapFiles.push(`${siteBaseUrl}/${sitemapFileName}`);
   log(`${sitemapFileName} generated.`);
@@ -168,22 +157,22 @@ ${chunk
 
 const sitemapIndexXml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapFiles
-  .map(
-    (url) => ` <sitemap>
-  <loc>${url}</loc>
-  <lastmod>${new Date().toISOString()}</lastmod>
- </sitemap>`,
-  )
-  .join("")}
+ ${sitemapFiles
+   .map(
+     (url) => ` <sitemap>
+   <loc>${url}</loc>
+   <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>`,
+   )
+   .join("\n")}
 </sitemapindex>`;
 
 fs.writeFileSync(sitemapPath, sitemapIndexXml);
 log("Sitemap index generated successfully.");
 
 await sendEmail(
-  "New PDFs and Sitemap Updated",
-  `${processedCount} new PDF file(s) processed.\nHTML pages and sitemap have been updated.`,
+  "New Past Papers & Sitemap Updated",
+  `${processed} new PDF(s) automatically processed.\nHTML pages and sitemap updated.`,
 );
 
-log(`Automatic process completed — ${processedCount} new file(s) handled.`);
+log(`Automatic processing completed — ${processed} new file(s) handled.`);
