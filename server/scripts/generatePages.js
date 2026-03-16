@@ -16,7 +16,6 @@ const r2 = new S3Client({
 const R2_BUCKET = "revise-pdfs";
 
 const logFilePath = path.join(__dirname, "..", "logs", "generator.log");
-
 fs.mkdirSync(path.dirname(logFilePath), { recursive: true });
 
 function log(message) {
@@ -44,7 +43,6 @@ async function sendEmail(subject, text) {
       subject,
       text,
     });
-
     log("Email sent: " + info.response);
   } catch (err) {
     log("Email failed: " + err.message);
@@ -53,7 +51,6 @@ async function sendEmail(subject, text) {
 
 const outputDir = path.join(__dirname, "..", "public", "pages");
 const sitemapPath = "/var/www/revise/client/build/sitemap.xml";
-
 const siteBaseUrl = "https://revise.co.ke";
 const cdnBaseUrl = "https://cdn.revise.co.ke";
 
@@ -62,16 +59,19 @@ if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 let sitemapEntries = [];
 
 async function getR2PdfFiles() {
-  const command = new ListObjectsV2Command({
-    Bucket: R2_BUCKET,
-  });
-
+  const command = new ListObjectsV2Command({ Bucket: R2_BUCKET });
   const response = await r2.send(command);
-
   return (response.Contents || [])
     .map((obj) => obj.Key)
     .filter((file) => file.toLowerCase().endsWith(".pdf"));
 }
+
+const parseExistingSitemap = () => {
+  if (!fs.existsSync(sitemapPath)) return [];
+  const data = fs.readFileSync(sitemapPath, "utf-8");
+  const urlMatches = [...data.matchAll(/<loc>(.*?)<\/loc>/g)];
+  return urlMatches.map((m) => m[1]);
+};
 
 async function run() {
   const pdfFiles = await getR2PdfFiles();
@@ -83,15 +83,24 @@ async function run() {
 
   log(`Processing ${pdfFiles.length} PDFs from R2.`);
 
+  const existingUrls = parseExistingSitemap();
+
   pdfFiles.forEach((file) => {
     const fileName = path.parse(file).name;
     const pageTitle = fileName.replace(/[-_]/g, " ").toUpperCase();
-    const htmlFileName = fileName + ".html";
+
+    const slug = fileName
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9\-]/g, "");
+    const htmlFileName = `${slug}.html`;
 
     const encodedFileUrl = `${cdnBaseUrl}/${encodeURIComponent(file)}`;
     const encodedHtmlUrl = `${siteBaseUrl}/pages/${encodeURIComponent(htmlFileName)}`;
 
-    const htmlContent = `
+    const htmlPath = path.join(outputDir, htmlFileName);
+    if (!fs.existsSync(htmlPath)) {
+      const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,13 +115,9 @@ async function run() {
   <a href="${encodedFileUrl}" download>Download PDF</a>
 </body>
 </html>`;
-
-    const htmlPath = path.join(outputDir, htmlFileName);
-    if (fs.existsSync(htmlPath)) return;
-
-    fs.writeFileSync(htmlPath, htmlContent);
-
-    log(`Generated HTML page for ${pageTitle}`);
+      fs.writeFileSync(htmlPath, htmlContent);
+      log(`Generated HTML page for ${pageTitle}`);
+    }
 
     if (!existingUrls.includes(encodedFileUrl)) {
       sitemapEntries.push({
@@ -120,7 +125,6 @@ async function run() {
         lastmod: new Date().toISOString(),
       });
     }
-
     if (!existingUrls.includes(encodedHtmlUrl)) {
       sitemapEntries.push({
         loc: encodedHtmlUrl,
@@ -128,31 +132,18 @@ async function run() {
       });
     }
   });
-}
-
-const parseExistingSitemap = () => {
-  if (!fs.existsSync(sitemapPath)) return [];
-  const data = fs.readFileSync(sitemapPath, "utf-8");
-  const urlMatches = [...data.matchAll(/<loc>(.*?)<\/loc>/g)];
-  return urlMatches.map((m) => m[1]);
-};
-
-run().then(() => {
-  const existingUrls = parseExistingSitemap();
-
-  existingUrls.forEach((url) => {
-    if (!sitemapEntries.find((e) => e.loc === url)) {
-      sitemapEntries.push({ loc: url, lastmod: new Date().toISOString() });
-    }
-  });
 
   const MAX_URLS = 40000;
   const sitemapDir = path.dirname(sitemapPath);
-
   let sitemapFiles = [];
   let chunkIndex = 1;
 
-  for (let i = 0; i < sitemapEntries.length; i += MAX_URLS) {
+  const allUrls = [...existingUrls];
+  sitemapEntries.forEach((entry) => {
+    if (!allUrls.includes(entry.loc)) allUrls.push(entry.loc);
+  });
+
+  for (let i = 0; i < allUrls.length; i += MAX_URLS) {
     const chunk = sitemapEntries.slice(i, i + MAX_URLS);
 
     const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -170,13 +161,9 @@ ${chunk
 
     const sitemapFileName = `sitemap-${chunkIndex}.xml`;
     const sitemapFilePath = path.join(sitemapDir, sitemapFileName);
-
     fs.writeFileSync(sitemapFilePath, sitemapXml);
-
     sitemapFiles.push(`${siteBaseUrl}/${sitemapFileName}`);
-
     log(`${sitemapFileName} generated.`);
-
     chunkIndex++;
   }
 
@@ -192,15 +179,15 @@ ${sitemapFiles
   )
   .join("")}
 </sitemapindex>`;
-
   fs.writeFileSync(sitemapPath, sitemapIndexXml);
-
   log("Sitemap index generated successfully.");
 
   sendEmail(
     "PDFs and Sitemap Generated",
-    `${sitemapEntries.length} pages processed. HTML pages and sitemap.xml generated successfully.`,
+    `${pdfFiles.length} PDFs processed. HTML pages and sitemap.xml generated successfully.`,
   );
 
   log("HTML Pages and sitemap.xml generation process completed.");
-});
+}
+
+run();
