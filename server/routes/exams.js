@@ -38,7 +38,7 @@ router.post("/:id/addexam", upload.single("file"), async (req, res, next) => {
 });
 
 router.get("/all-exams", getExams);
-router.get("/downloads/:id", downloads);
-router.get("/downloads/total", getTotalDownloads);
+// router.get("/downloads/:id", downloads);
+// router.get("/downloads/total", getTotalDownloads);
 
 module.exports = router;
