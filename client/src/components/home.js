@@ -18,7 +18,24 @@ export const Home = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [exams, setExams] = useState([]);
-  // const [downloads, setDownloads] = useState( 0);
+  const [downloads, setDownloads] = useState(0);
+
+  useEffect(() => {
+    const fileUrl = `${exambankAPI}/api/exams/downloads/total`;
+
+    const fetchDownloads = async () => {
+      try {
+        const res = await fetch(fileUrl);
+        const data = await res.json();
+
+        setDownloads(data.downloads);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchDownloads();
+  }, []);
 
   const handleAddExam = () => {
     if (userData) {
@@ -45,18 +62,6 @@ export const Home = () => {
 
     getExams();
   }, []);
-
-  // useEffect(() => {
-  //   socket.on("examDownload", (data) => {
-  //     if (data.examID === exam._id) {
-  //       setDownloads(data.downloads);
-  //     }
-  //   });
-
-  //   return () => {
-  //     socket.off("examDownload");
-  //   };
-  // }, [exam._id]);
 
   const logoutUser = () => {
     localStorage.clear();
@@ -103,7 +108,9 @@ export const Home = () => {
         />
       </div>
 
-      <span className="allexams">{exams.length} Exam papers</span>
+      <span className="allexams">
+        {exams.length} Papers • {downloads} Downloads
+      </span>
 
       <div className="examswrapper">
         <Exams searchTerm={searchTerm} />

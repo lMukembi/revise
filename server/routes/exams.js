@@ -16,7 +16,7 @@ const upload = multer({
   limits: { fileSize: 100 * 1024 * 1024 },
 });
 
-const { addExam, getExams } = require("../controllers/exams");
+const { addExam, getExams, downloads } = require("../controllers/exams");
 
 router.post("/:id/addexam", upload.single("file"), async (req, res, next) => {
   try {
@@ -24,17 +24,21 @@ router.post("/:id/addexam", upload.single("file"), async (req, res, next) => {
 
     const scriptPath = path.join(__dirname, "../scripts/generatePages.js");
 
-    exec(`node ${scriptPath}`, (error, stdout, stderr) => {
-      if (error) console.error("Script error:", error);
-      if (stderr) console.error(stderr);
-      if (stdout) console.log(stdout);
-    });
+    exec(
+      `node ${scriptPath} "${req.body.code}" "${req.body.unit}"`,
+      (error, stdout, stderr) => {
+        if (error) console.error("Script error:", error);
+        if (stderr) console.error(stderr);
+        if (stdout) console.log(stdout);
+      },
+    );
   } catch (err) {
     next(err);
   }
 });
 
 router.get("/all-exams", getExams);
-// router.get("/downloads", downloads);
+router.get("/downloads/:id", downloads);
+router.get("/downloads/total", getTotalDownloads);
 
 module.exports = router;

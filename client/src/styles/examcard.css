@@ -7,45 +7,33 @@
 .examcard .unit {
   font-size: large;
   font-weight: 500;
-  display: flex;
   align-items: center;
 }
 
-.examcard .download {
+.examcard .actionbutton {
   cursor: pointer;
-  color: #9d2e34;
   margin-left: 5px;
   display: flex;
   align-items: center;
 }
 
-.examcard .download .downloadicon {
+.examcard .download .actionicon {
   font-size: 25px;
+  color: #9d2e34;
 }
 
 .examcard .others {
-  margin-left: 0px;
   display: flex;
   flex-wrap: wrap;
   font-size: small;
   max-width: 100%;
+  gap: 4px;
 }
 
-.examcard .others small:nth-child(1),
-.examcard .others small:nth-child(3) {
-  white-space: nowrap;
-}
-
-.examcard .others span {
-  margin: 0px 5px;
-}
-
-.examcard .others small:nth-child(2) {
+.examcard .others small {
   white-space: normal;
   overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-  flex-grow: 1;
+  word-break: normal;
 }
 
 /* DESKTOP */

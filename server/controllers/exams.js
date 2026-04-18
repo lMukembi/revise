@@ -30,7 +30,7 @@ exports.addExam = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Upload failed" });
+    res.status(500).json({ message: "Upload failed!" });
   }
 };
 
@@ -41,5 +41,49 @@ exports.getExams = async (req, res) => {
     return res.status(200).json(exams);
   } catch (error) {
     res.status(404).json({ message: "No exams!" });
+  }
+};
+
+exports.downloadExam = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const exam = await Exams.findByIdAndUpdate(
+      id,
+      { $inc: { downloads: 1 } },
+      { new: true },
+    );
+
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found!" });
+    }
+
+    return res.status(200).json({
+      file: exam.file,
+      downloads: exam.downloads,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Download failed!" });
+  }
+};
+
+exports.getTotalDownloads = async (req, res) => {
+  try {
+    const result = await Exams.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$downloads" },
+        },
+      },
+    ]);
+
+    const totalDownloads = result[0]?.total || 0;
+
+    res.status(200).json({ totalDownloads });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get downloads." });
   }
 };

@@ -3,6 +3,9 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
 
+const codeArg = process.argv[2];
+const unitArg = process.argv[3];
+
 const logoPath = path.join(__dirname, "..", "assets", "logo.png");
 const logoBase64 = fs.readFileSync(logoPath).toString("base64");
 const logoDataUrl = `data:image/png;base64,${logoBase64}`;
@@ -92,10 +95,18 @@ async function run() {
   pdfFiles.forEach((file) => {
     const fileName = path.parse(file).name;
 
-    const pageTitle = fileName
+    const cleanName = fileName
       .replace(/^\d+\s*/, "")
       .replace(/[-_]/g, " ")
       .toUpperCase();
+
+    const isTargetFile =
+      unitArg && cleanName.toLowerCase().includes(unitArg.toLowerCase());
+
+    const pageTitle = isTargetFile ? unitArg.toUpperCase() : cleanName;
+
+    const fullTitle =
+      isTargetFile && codeArg ? `${codeArg} ${pageTitle}` : pageTitle;
 
     const slug = fileName
       .toLowerCase()
@@ -115,15 +126,19 @@ async function run() {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Revise | Free Download ${pageTitle} Exam Paper PDF Kenya</title>
-  <meta name="description" content="Revise | Free Download ${pageTitle} Exam Paper PDF Kenya" />
+  <title>Revise | Free Download ${fullTitle} Exam Paper PDF Kenya</title>
+  <meta name="description" content="Revise | Free Download ${fullTitle} Exam Paper PDF Kenya" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="canonical" href="${encodedHtmlUrl}">
   
   <style>
     body {
-      font-family: Arial,
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+      "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
       sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .home {
@@ -233,9 +248,9 @@ async function run() {
     </div>
 
     <div class="content">
-      <h1>${pageTitle} Exam Paper PDF</h1>
+      <h1>${fullTitle} Exam Paper PDF</h1>
 
-      <p>Download free ${pageTitle} past exam paper in PDF format. Students preparing for exams can revise using real past exam questions from Kenyan universities and colleges.</p>
+      <p>Download free ${fullTitle} past exam paper in PDF format. Students preparing for exams can revise using real past exam questions from Kenyan universities and colleges.</p>
       
       <p> Practicing past papers helps you understand exam patterns, improve time management and boost confidence before your exams.</p>
 
@@ -245,7 +260,7 @@ async function run() {
 
   <script>
     const fileUrl = "${encodedFileUrl}";
-    const fileName = "${pageTitle}".trim() + ".pdf";
+    const fileName = "${fullTitle}".trim() + ".pdf";
 
     document.getElementById("downloadBtn").addEventListener("click", async (e) => {
       e.preventDefault();
@@ -287,7 +302,7 @@ async function run() {
   </html>`;
 
       fs.writeFileSync(htmlPath, htmlContent);
-      log(`Generated HTML page for ${pageTitle}.`);
+      log(`Generated HTML page for ${fullTitle}.`);
     }
 
     if (!existingUrls.includes(encodedHtmlUrl)) {
