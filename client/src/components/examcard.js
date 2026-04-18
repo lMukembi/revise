@@ -111,7 +111,7 @@ export const Examcard = ({ exam, index }) => {
           {index + 1}. {exam.code}: {exam.unit}
         </div>
         <div onClick={handleDownload} className="download" title="Download PDF">
-          <HiOutlineDocumentDownload className="actionbutton" />
+          <HiOutlineDocumentDownload className="actionicon" />
         </div>
       </div>
       <div className="others">

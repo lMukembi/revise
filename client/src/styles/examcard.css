@@ -10,7 +10,7 @@
   align-items: center;
 }
 
-.examcard .actionbutton {
+/* .examcard .actionbutton {
   cursor: pointer;
   margin-left: 5px;
   display: flex;
@@ -18,6 +18,15 @@
 }
 
 .examcard .download .actionicon {
+  font-size: 25px;
+  color: #9d2e34;
+} */
+
+.examcard .download .actionicon {
+  cursor: pointer;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
   font-size: 25px;
   color: #9d2e34;
 }
