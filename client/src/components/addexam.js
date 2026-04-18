@@ -173,7 +173,7 @@ export const Addexam = () => {
               name="code"
               required
               placeholder="Enter unit code"
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
             />
 
             <input
@@ -181,7 +181,7 @@ export const Addexam = () => {
               name="name"
               required
               placeholder="Enter unit title"
-              onChange={(e) => setUnit(e.target.value)}
+              onChange={(e) => setUnit(e.target.value.toUpperCase())}
             />
 
             <select

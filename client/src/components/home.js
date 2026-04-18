@@ -18,24 +18,24 @@ export const Home = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [exams, setExams] = useState([]);
-  const [downloads, setDownloads] = useState(0);
+  // const [downloads, setDownloads] = useState(0);
 
-  useEffect(() => {
-    const fileUrl = `${exambankAPI}/api/exams/downloads/total`;
+  // useEffect(() => {
+  //   const fileUrl = `${exambankAPI}/api/exams/downloads/total`;
 
-    const fetchDownloads = async () => {
-      try {
-        const res = await fetch(fileUrl);
-        const data = await res.json();
+  //   const fetchDownloads = async () => {
+  //     try {
+  //       const res = await fetch(fileUrl);
+  //       const data = await res.json();
 
-        setDownloads(data.downloads);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  //       setDownloads(data.downloads);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-    fetchDownloads();
-  }, []);
+  //   fetchDownloads();
+  // }, []);
 
   const handleAddExam = () => {
     if (userData) {
@@ -108,9 +108,11 @@ export const Home = () => {
         />
       </div>
 
-      <span className="allexams">
+      {/* <span className="allexams">
         {exams.length} Papers • {downloads} Downloads
-      </span>
+      </span> */}
+
+      <span className="allexams">{exams.length} Papers</span>
 
       <div className="examswrapper">
         <Exams searchTerm={searchTerm} />
