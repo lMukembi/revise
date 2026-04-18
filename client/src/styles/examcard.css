@@ -8,6 +8,7 @@
   font-size: large;
   font-weight: 500;
   align-items: center;
+  display: flex;
 }
 
 /* .examcard .actionbutton {
@@ -25,7 +26,6 @@
 .examcard .download .actionicon {
   cursor: pointer;
   margin-left: 5px;
-  display: flex;
   align-items: center;
   font-size: 25px;
   color: #9d2e34;
